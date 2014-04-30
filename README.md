@@ -18,24 +18,24 @@ Half the point of a tiling window manager is to be able to launch and kill windo
 A better way to handle this is to run Emacs in server (a.k.a. daemon) mode. This means you start an emacs server which stays running in the background and you spawn/kill instances of emacsclient as you work. As an additional benefit it means that all your emacs instances share the same buffers, history, settings, etc.
 
 To run emacs in server mode simply add the following to your config files:
-{% highlight scm %}
+```emacs
 ;; Start emacs as a server
 (server-start)
-{% endhighlight %}
+```
 
 easy!
 
 Now we need to create some new commands for launching emacsclients instead of emacs itself. First a bash alias:
-{% highlight bash %}
+```bash
 alias emacs='emacsclient -c -n -e'
-{% endhighlight %}
+```
 
 The `-c` creates a new frame and the `-n` detaches the client from the bash console. Handily if you run this command when no server exists it will create one before launching the client.
 
-Finally we want a command which we can bind to a button in the window manager to launch a new emacsclient. For this I use a slightly modified version of the alias above (I use [xmonad][] so this code actually just creates a haskell string which I later bind a key to execute as shell command):
+Finally we want a command which we can bind to a button in the window manager to launch a new emacsclient. For this I use a slightly modified version of the alias above (I use [xmonad](http://xmonad.org/) so this code actually just creates a haskell string which I later bind a key to execute as shell command):
 
-{% highlight haskell %}
+```haskell
 myEditor = "emacsclient -c -n -e '(switch-to-buffer nil)'"
-{% endhighlight %}
+```
 
 You can see I've added an argument `-e '(switch-to-buffer nil)'`, this prevents the new client from opening the file named as an argument. Since we don't name any files for it to open the client would go to the scratch buffer by default, which is fairly useless. With this command it opens whichever buffer was most recently closed instead, much better!
