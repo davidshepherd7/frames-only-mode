@@ -40,6 +40,12 @@
 (set 'org-agenda-window-setup 'other-frame)
 (set 'org-src-window-setup 'other-frame)
 
+(defadvice calendar (around disable-pop-up-frames activate)
+  "Disable pop-up-frames while this is going on, otherwise we get
+extra useless frames."
+  (let ((pop-up-frames 'nil))
+    ad-do-it))
+
 ;; kill frames when a buffer is buried, makes most things play nice with
 ;; frames
 (set 'frame-auto-hide-function 'delete-frame)
