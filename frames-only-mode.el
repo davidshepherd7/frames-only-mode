@@ -46,6 +46,21 @@ extra useless frames."
   (let ((pop-up-frames 'nil))
     ad-do-it))
 
+(defun super-abort-recursive-edit ()
+  "kill any sub-windows and abort recursive edit."
+  (interactive)
+
+  ;; Biggest window is probably the "main" one, select it and delete the
+  ;; rest.
+  (select-window (get-largest-window 't 'nil 'nil))
+  (delete-other-windows)
+
+  (abort-recursive-edit))
+
+(global-set-key [remap abort-recursive-edit] #'super-abort-recursive-edit)
+
+
+
 ;; kill frames when a buffer is buried, makes most things play nice with
 ;; frames
 (set 'frame-auto-hide-function 'delete-frame)
