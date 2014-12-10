@@ -1,6 +1,8 @@
 
 A collection of settings (and a little code) for making emacs open things in frames (i.e. real windows) instead of internal emacs-windows. This allows it to work properly with an external window manager.
 
+There's a fairly rough screencast showing the kind of things you can do with this [here](https://www.youtube.com/watch?v=vi1BwRYJr6k).
+
 Basic setup
 -----
 
