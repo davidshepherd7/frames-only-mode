@@ -40,6 +40,10 @@
 (set 'org-agenda-window-setup 'other-frame)
 (set 'org-src-window-setup 'other-frame)
 
+(when (require 'magit nil 'noerror)
+  ;; Use the current frame/window to enter the magit commit message
+  (set 'magit-server-window-for-commit nil))
+
 ;; Make calendar do something more sensible with its window/frame layout.
 (defadvice calendar (around disable-pop-up-frames activate)
   "Disable pop-up-frames while this is going on, otherwise we get
