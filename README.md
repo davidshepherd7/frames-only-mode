@@ -43,6 +43,26 @@ myEditor = "emacsclient -c -n -e '(switch-to-buffer nil)'"
 You can see I've added an argument `-e '(switch-to-buffer nil)'`, this prevents the new client from opening the file named as an argument. Since we don't name any files for it to open the client would go to the scratch buffer by default, which is fairly useless. With this command it opens whichever buffer was most recently closed instead.
 
 
+Emacs minibuffer completion
+---------
+
+Completion in the minibuffer can be problematic because, with the default
+emacs settings, emacs will open a new frame to display completions. I
+recommend using an alternative completion method such as [helm](http://tuhdo.github.io/helm-intro.html) or [ido](https://www.masteringemacs.org/article/introduction-to-ido-mode) (along with [smex](https://github.com/nonsequitur/smex) enable ido completion of M-x and [ido-ubiquitous](https://github.com/DarwinAwardWinner/ido-ubiquitous) to enable it in other places).
+
+When using ido you should also set `ido-completion-buffer` to `nil` to
+prevent the popup of a completions buffer (the buffer is unecessary because
+possible completion are displayed in the minibuffer).
+
+If you do use the default emacs completion (or ido with a popup completion
+buffer) then `frames-only-mode-use-windows-for-completion` can be used to
+control whether the `*Completions*` buffer is displayed in a frame or an
+emacs window. The default is to use an emacs window, which works well
+without changing any window manager settings. Alternatively the
+`*Completions*` buffer can be disabled entirely by setting
+`completion-auto-help` to `nil`.
+
+
 Integrating with command line git
 ----------------
 

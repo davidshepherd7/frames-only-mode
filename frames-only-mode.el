@@ -19,6 +19,19 @@
  killed when the buffer is killed.")
 
 
+(defcustom frames-only-mode-use-windows-for-completion t
+  "Use emacs windows for display of completions.
+
+This is useful because a new completion frame would steal
+window manager focus.
+
+Completion windows are always split horizontally (helm style).
+
+To disable completion popups entirely use the variable
+`completion-auto-help' for default emacs completion or
+`ido-completion-buffer' for ido-based completion. ")
+
+
 
 ;; Code
 
@@ -91,6 +104,16 @@ extra useless frames."
     (when (and (one-window-p)
                (member buffer-to-bury kill-frame-when-buffer-killed-buffer-list))
       (delete-frame))))
+
+
+(defadvice minibuffer-completion-help (around use-windows-for-completion)
+  (let ((pop-up-frames (not frames-only-mode-use-windows-for-completion))
+        (split-width-threshold 9999))
+    ad-do-it))
+(defadvice ido-completion-help (around use-windows-for-ido-completion)
+  (let ((pop-up-frames (not frames-only-mode-use-windows-for-completion))
+        (split-width-threshold 9999))
+    ad-do-it))
 
 
 ;; Make sure completions buffer is buried after we are done with the minibuffer
