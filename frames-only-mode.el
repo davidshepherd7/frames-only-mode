@@ -100,4 +100,10 @@ extra useless frames."
 
 (add-hook 'focus-in-hook (lambda () (when (equal (buffer-name) "*Completions*") (focus-active-minibuffer))))
 
+
+;; Make sure completions buffer is buried after we are done with the minibuffer
+(add-hook 'minibuffer-exit-hook (lambda () (when (get-buffer "*Completions*")
+                                        (bury-buffer "*Completions*"))))
+
+
 (provide 'frames-only-mode)
