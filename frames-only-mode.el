@@ -90,4 +90,14 @@ extra useless frames."
       (delete-frame))))
 
 
+;; Prevent completions buffer from stealing focus when completing in
+;; minibuffer using standard emacs completion.
+(defun focus-active-minibuffer ()
+  (interactive)
+  (when (active-minibuffer-window)
+    (select-frame-set-input-focus (window-frame (active-minibuffer-window)))
+    (select-window (active-minibuffer-window))))
+
+(add-hook 'focus-in-hook (lambda () (when (equal (buffer-name) "*Completions*") (focus-active-minibuffer))))
+
 (provide 'frames-only-mode)
