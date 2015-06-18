@@ -74,19 +74,22 @@ extra useless frames."
 ;; Hacks to make other things play nice by killing the frame when certain
 ;; buffers are closed.
 (defun kill-frame-if-current-buffer-matches ()
-  "Kill frames as well when certain buffers are closed, helps stop some
+  "Kill frames as well when certain buffers are closed (but only
+  if there is only a single window in the frame), helps stop some
   packages spamming frames."
-  (interactive)
-  (if (member (buffer-name) kill-frame-when-buffer-killed-buffer-list)
-      (delete-frame)))
+  (when (and (one-window-p)
+             (member (buffer-name) kill-frame-when-buffer-killed-buffer-list))
+    (delete-frame)))
 
 (add-hook 'kill-buffer-hook 'kill-frame-if-current-buffer-matches)
 
 (defadvice bury-buffer (around kill-frame-if-current-buffer-matches activate)
-  "Kill the frame when burying certain buffers."
+  "Kill the frame when burying certain buffers (but only if there
+  is only a single window in the frame)."
   (let ((buffer-to-bury (buffer-name)))
     ad-do-it
-    (when (member buffer-to-bury kill-frame-when-buffer-killed-buffer-list)
+    (when (and (one-window-p)
+               (member buffer-to-bury kill-frame-when-buffer-killed-buffer-list))
       (delete-frame))))
 
 
