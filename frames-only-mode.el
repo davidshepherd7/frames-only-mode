@@ -14,7 +14,7 @@
 ;; Options:
 
 (defvar kill-frame-when-buffer-killed-buffer-list
-  '("*RefTeX Select*" "*Help*" "*Popup Help*")
+  '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
   "Buffer names for which the containing frame should be
  killed when the buffer is killed.")
 
@@ -71,7 +71,7 @@ extra useless frames."
 ;; frames
 (set 'frame-auto-hide-function 'delete-frame)
 
-;; Hack to make other things play nice by killing the frame when certain
+;; Hacks to make other things play nice by killing the frame when certain
 ;; buffers are closed.
 (defun kill-frame-if-current-buffer-matches ()
   "Kill frames as well when certain buffers are closed, helps stop some
@@ -79,7 +79,15 @@ extra useless frames."
   (interactive)
   (if (member (buffer-name) kill-frame-when-buffer-killed-buffer-list)
       (delete-frame)))
+
 (add-hook 'kill-buffer-hook 'kill-frame-if-current-buffer-matches)
+
+(defadvice bury-buffer (around kill-frame-if-current-buffer-matches activate)
+  "Kill the frame when burying certain buffers."
+  (let ((buffer-to-bury (buffer-name)))
+    ad-do-it
+    (when (member buffer-to-bury kill-frame-when-buffer-killed-buffer-list)
+      (delete-frame))))
 
 
 (provide 'frames-only-mode)
