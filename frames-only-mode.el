@@ -105,16 +105,14 @@ extra useless frames."
                (member buffer-to-bury kill-frame-when-buffer-killed-buffer-list))
       (delete-frame))))
 
-
-(defadvice minibuffer-completion-help (around use-windows-for-completion)
+;; Advise completion popup functions to use windows instead of frames if
+;; the custom setting is true.
+(defun advice-use-windows-for-completion (orig-fun &rest args)
   (let ((pop-up-frames (not frames-only-mode-use-windows-for-completion))
         (split-width-threshold 9999))
-    ad-do-it))
-(defadvice ido-completion-help (around use-windows-for-ido-completion)
-  (let ((pop-up-frames (not frames-only-mode-use-windows-for-completion))
-        (split-width-threshold 9999))
-    ad-do-it))
-
+    (apply orig-fun args)))
+(advice-add 'minibuffer-completion-help :around #'advice-use-windows-for-completion)
+(advice-add 'ido-completion-help :around #'advice-use-windows-for-completion)
 
 ;; Make sure completions buffer is buried after we are done with the minibuffer
 (add-hook 'minibuffer-exit-hook (lambda () (when (get-buffer "*Completions*")
