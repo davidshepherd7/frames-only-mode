@@ -55,7 +55,13 @@ To disable completion popups entirely use the variable
 
 (when (require 'magit nil 'noerror)
   ;; Use the current frame/window to enter the magit commit message
-  (set 'magit-server-window-for-commit nil))
+  (set 'magit-server-window-for-commit nil)
+
+  ;; Don't auto popup a magit diff buffer when commiting, can still get it
+  ;; if needed with C-c C-d.
+  (set 'magit-diff-auto-show nil))
+
+
 
 ;; Make calendar do something more sensible with its window/frame layout.
 (defadvice calendar (around disable-pop-up-frames activate)
