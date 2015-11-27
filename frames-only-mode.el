@@ -59,7 +59,7 @@ To disable completion popups entirely use the variable
 
   ;; Don't auto popup a magit diff buffer when commiting, can still get it
   ;; if needed with C-c C-d.
-  (set 'magit-diff-auto-show nil))
+  (set 'magit-commit-show-diff nil))
 
 
 
