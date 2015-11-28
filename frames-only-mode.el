@@ -33,10 +33,11 @@ To disable completion popups entirely use the variable
 
 
 
-;; Code
+;;; Basics
 
-;; Make new frames instead of new windows
+;; Make new frames instead of new windows, the main setting
 (set 'pop-up-frames 'graphic-only)
+
 
 ;; Focus follows mouse (for emacs windows) off to prevent crazy things
 ;; happening when I click on e.g. compilation error links. Would do nothing
@@ -45,37 +46,6 @@ To disable completion popups entirely use the variable
 (set 'mouse-autoselect-window nil)
 (set 'focus-follows-mouse nil)
 
-;; gdb (gud) does some stupid things with windows, this stops some of it:
-(set 'gdb-use-separate-io-buffer nil)
-(set 'gdb-many-windows nil)
-
-;; org windows: Use frames not emacs windows
-(set 'org-agenda-window-setup 'other-frame)
-(set 'org-src-window-setup 'other-frame)
-
-
-(when (require 'magit nil 'noerror)
-  ;; Use the current frame/window to enter the magit commit message
-  (set 'magit-server-window-for-commit nil)
-
-  ;; Don't auto popup a magit diff buffer when commiting, can still get it
-  ;; if needed with C-c C-d. The variable name for this changed in magit
-  ;; version 2.30, so for now we will set both variables (28/11/2015).
-  ;; TODO: remove in a year or two.
-  (if (boundp 'magit-commit-show-diff)
-      (set 'magit-commit-show-diff nil)
-    (set 'magit-diff-auto-show nil))
-
-  )
-
-
-
-;; Make calendar do something more sensible with its window/frame layout.
-(defadvice calendar (around disable-pop-up-frames activate)
-  "Disable pop-up-frames while this is going on, otherwise we get
-extra useless frames."
-  (let ((pop-up-frames 'nil))
-    ad-do-it))
 
 ;; Key bind to close sub-windows (e.g. as created by re-builder or
 ;; calendar) with the same key as abort-recursive-edit.
@@ -90,7 +60,6 @@ extra useless frames."
 
   (abort-recursive-edit))
 (global-set-key [remap abort-recursive-edit] #'super-abort-recursive-edit)
-
 
 
 ;; kill frames when a buffer is buried, makes most things play nice with
@@ -109,6 +78,7 @@ extra useless frames."
 
 (add-hook 'kill-buffer-hook 'kill-frame-if-current-buffer-matches)
 
+
 (defadvice bury-buffer (around kill-frame-if-current-buffer-matches activate)
   "Kill the frame when burying certain buffers (but only if there
   is only a single window in the frame)."
@@ -117,6 +87,61 @@ extra useless frames."
     (when (and (one-window-p)
                (member buffer-to-bury kill-frame-when-buffer-killed-buffer-list))
       (delete-frame))))
+
+
+
+
+;;; gud
+
+;; gdb (gud) does things with windows by default, this stops some of it:
+(set 'gdb-use-separate-io-buffer nil)
+(set 'gdb-many-windows nil)
+
+
+
+
+;;; org-mode
+
+;; org windows: Use frames not emacs windows
+(set 'org-agenda-window-setup 'other-frame)
+(set 'org-src-window-setup 'other-frame)
+
+
+
+
+;;; magit
+
+(when (require 'magit nil 'noerror)
+
+  ;; Use the current frame/window to enter the magit commit message
+  (set 'magit-server-window-for-commit nil)
+
+  ;; Don't auto popup a magit diff buffer when commiting, can still get it
+  ;; if needed with C-c C-d. The variable name for this changed in magit
+  ;; version 2.30, so for now we will set both variables (28/11/2015).
+  ;; TODO: remove in a year or two.
+  (if (boundp 'magit-commit-show-diff)
+      (set 'magit-commit-show-diff nil)
+    (set 'magit-diff-auto-show nil))
+
+  )
+
+
+
+
+;;; Calendar
+
+;; Make calendar do something more sensible with its window/frame layout.
+(defadvice calendar (around disable-pop-up-frames activate)
+  "Disable pop-up-frames while this is going on, otherwise we get
+extra useless frames."
+  (let ((pop-up-frames 'nil))
+    ad-do-it))
+
+
+
+
+;;; Completion
 
 ;; Advise completion popup functions to use windows instead of frames if
 ;; the custom setting is true.
