@@ -53,13 +53,20 @@ To disable completion popups entirely use the variable
 (set 'org-agenda-window-setup 'other-frame)
 (set 'org-src-window-setup 'other-frame)
 
+
 (when (require 'magit nil 'noerror)
   ;; Use the current frame/window to enter the magit commit message
   (set 'magit-server-window-for-commit nil)
 
   ;; Don't auto popup a magit diff buffer when commiting, can still get it
-  ;; if needed with C-c C-d.
-  (set 'magit-diff-auto-show nil))
+  ;; if needed with C-c C-d. The variable name for this changed in magit
+  ;; version 2.30, so for now we will set both variables (28/11/2015).
+  ;; TODO: remove in a year or two.
+  (if (boundp 'magit-commit-show-diff)
+      (set 'magit-commit-show-diff nil)
+    (set 'magit-diff-auto-show nil))
+
+  )
 
 
 
