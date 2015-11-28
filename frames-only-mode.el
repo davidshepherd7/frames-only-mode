@@ -132,4 +132,13 @@ extra useless frames."
                                         (bury-buffer "*Completions*"))))
 
 
+
+
+;;; ediff
+
+;; Use a single frame for ediff (without this you end up with an entire
+;; frame for the control buffer, this doesn't work well at all with tiling
+;; window managers).
+(set 'ediff-window-setup-function 'ediff-setup-windows-plain)
+
 (provide 'frames-only-mode)
