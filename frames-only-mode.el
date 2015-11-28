@@ -31,6 +31,12 @@ To disable completion popups entirely use the variable
 `completion-auto-help' for default emacs completion or
 `ido-completion-buffer' for ido-based completion. ")
 
+(defcustom frames-only-mode-use-window-functions
+  (list #'calendar)
+  "A list of functions inside which new emacs windows should be created instead of frames.
+
+(i.e. pop-up-frames is let bound to nil, the default value).")
+
 
 
 ;;; Basics
@@ -45,6 +51,16 @@ To disable completion popups entirely use the variable
 ;; within frames.
 (set 'mouse-autoselect-window nil)
 (set 'focus-follows-mouse nil)
+
+
+;; Disable in some functions as specified by customisation
+(defun frames-only-mode-advice-use-windows (fun &rest args)
+  "Create new emacs windows instead of frames within this function"
+  (let ((pop-up-frames nil))
+    (apply fun args)))
+
+(mapc (lambda (fun) (advice-add fun :around #'frames-only-mode-advice-use-windows))
+      frames-only-mode-use-window-functions)
 
 
 ;; Key bind to close sub-windows (e.g. as created by re-builder or
@@ -129,18 +145,6 @@ To disable completion popups entirely use the variable
 
 
 
-;;; Calendar
-
-;; Make calendar do something more sensible with its window/frame layout.
-(defadvice calendar (around disable-pop-up-frames activate)
-  "Disable pop-up-frames while this is going on, otherwise we get
-extra useless frames."
-  (let ((pop-up-frames 'nil))
-    ad-do-it))
-
-
-
-
 ;;; Completion
 
 ;; Advise completion popup functions to use windows instead of frames if
@@ -165,5 +169,7 @@ extra useless frames."
 ;; frame for the control buffer, this doesn't work well at all with tiling
 ;; window managers).
 (set 'ediff-window-setup-function 'ediff-setup-windows-plain)
+
+
 
 (provide 'frames-only-mode)
