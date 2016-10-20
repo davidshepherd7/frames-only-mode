@@ -1,22 +1,40 @@
+;;; frames-only-mode.el --- Use frames in place of windows -*- lexical-binding: t; -*-
 
-;; Collection of settings and code to use frames instead of emacs
-;; "windows".
+;; Copyright (C) 2016 David Sheperd
 
+;; Author: David Sheperd <davidsheperd7@gmail.com>
+;; Keywords: frame emacs window manager tiling
+;; URL: https://github.com/davidshepherd7/frames-only-mode
+;; Version: 0.0.0
+;; Package-Requires: ((emacs "24"))
 
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
 
-;; To automatically open a "useful" buffer in new frames xmonads binding
-;; for a new frame is set to "emacsclient -c -n -e '(switch-to-buffer
-;; nil)'". For other window managers something similar should work...
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
 
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+;;; Commentary:
 
-;; Options:
+;; This package provides a minor mode that, when enabled, changes commands to
+;; open new frames where they otherwise would have opened new Emacs windows.
+
+;; To automatically open a "useful" buffer in new frames set xmonad's binding
+;; for a new frame to `emacsclient -c -n -e "(switch-to-buffer nil)"'. Something
+;; similar should work for other window managers.
+
+;;; Code:
 
 (defvar kill-frame-when-buffer-killed-buffer-list
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
-  "Buffer names for which the containing frame should be
- killed when the buffer is killed.")
+  "Buffer names whose containing frames should be killed their buffers are killed.")
 
 
 (defcustom frames-only-mode-use-windows-for-completion t
@@ -38,7 +56,7 @@ To disable completion popups entirely use the variable
 (i.e. pop-up-frames is let bound to nil, the default value).")
 
 
-
+
 ;;; Basics
 
 ;; Make new frames instead of new windows, the main setting
@@ -55,7 +73,7 @@ To disable completion popups entirely use the variable
 
 ;; Disable in some functions as specified by customisation
 (defun frames-only-mode-advice-use-windows (fun &rest args)
-  "Create new emacs windows instead of frames within this function"
+  "Create new emacs windows instead of frames within this function."
   (let ((pop-up-frames nil))
     (apply fun args)))
 
@@ -66,7 +84,7 @@ To disable completion popups entirely use the variable
 ;; Key bind to close sub-windows (e.g. as created by re-builder or
 ;; calendar) with the same key as abort-recursive-edit.
 (defun super-abort-recursive-edit ()
-  "kill any sub-windows and abort recursive edit."
+  "Kill any sub-windows and abort recursive edit."
   (interactive)
 
   ;; Biggest window is probably the "main" one, select it and delete the
@@ -105,7 +123,7 @@ To disable completion popups entirely use the variable
       (delete-frame))))
 
 
-
+
 
 ;;; gud
 
@@ -114,7 +132,7 @@ To disable completion popups entirely use the variable
 (set 'gdb-many-windows nil)
 
 
-
+
 
 ;;; org-mode
 
@@ -123,7 +141,7 @@ To disable completion popups entirely use the variable
 (set 'org-src-window-setup 'other-frame)
 
 
-
+
 
 ;;; magit
 
@@ -143,7 +161,7 @@ To disable completion popups entirely use the variable
   )
 
 
-
+
 
 ;;; Completion
 
@@ -161,7 +179,7 @@ To disable completion popups entirely use the variable
                                         (bury-buffer "*Completions*"))))
 
 
-
+
 
 ;;; ediff
 
@@ -170,6 +188,5 @@ To disable completion popups entirely use the variable
 ;; window managers).
 (set 'ediff-window-setup-function 'ediff-setup-windows-plain)
 
-
-
 (provide 'frames-only-mode)
+;;; frames-only-mode.el ends here
