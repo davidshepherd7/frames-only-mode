@@ -57,6 +57,7 @@ To disable completion popups entirely use the variable
 
 
 
+
 ;;; Helper functions
 
 (defun frames-only-mode-advice-use-windows (fun &rest args)
@@ -108,16 +109,36 @@ To disable completion popups entirely use the variable
   "Use frames instead of emacs windows."
   :global t
 
-  ;; Make new frames instead of new windows, the main setting
-  (set 'pop-up-frames 'graphic-only)
+  (setq
+   ;; Make new frames instead of new windows, the main setting
+   pop-up-frames 'graphic-only
 
 
-  ;; Focus follows mouse (for emacs windows) off to prevent crazy things
-  ;; happening when I click on e.g. compilation error links. Would do nothing
-  ;; interesting anyway if everything is working because there are no windows
-  ;; within frames.
-  (set 'mouse-autoselect-window nil)
-  (set 'focus-follows-mouse nil)
+   ;; Focus follows mouse (for emacs windows) off to prevent crazy things
+   ;; happening when I click on e.g. compilation error links. Would do nothing
+   ;; interesting anyway if everything is working because there are no windows
+   ;; within frames.
+   mouse-autoselect-window nil
+   focus-follows-mouse nil
+
+   ;; kill frames when a buffer is buried, makes most things play nice with
+   ;; frames
+   frame-auto-hide-function 'delete-frame
+
+   ;; gdb (gud) does things with windows by default, this stops some of it:
+   gdb-use-separate-io-buffer nil
+   gdb-many-windows nil
+
+
+   ;; org windows: Use frames not emacs windows
+   org-agenda-window-setup 'other-frame
+   org-src-window-setup 'other-frame
+
+   ;; Use a single frame for ediff (without this you end up with an entire
+   ;; frame for the control buffer, this doesn't work well at all with tiling
+   ;; window managers).
+   ediff-window-setup-function 'ediff-setup-windows-plain
+   )
 
 
   ;; Disable in some functions as specified by customisation
@@ -130,23 +151,9 @@ To disable completion popups entirely use the variable
   (global-set-key [remap abort-recursive-edit] #'super-abort-recursive-edit)
 
 
-  ;; kill frames when a buffer is buried, makes most things play nice with
-  ;; frames
-  (set 'frame-auto-hide-function 'delete-frame)
-
   ;; Hacks to make other things play nice by killing the frame when certain
   ;; buffers are closed.
   (add-hook 'kill-buffer-hook 'kill-frame-if-current-buffer-matches)
-
-
-  ;; gdb (gud) does things with windows by default, this stops some of it:
-  (set 'gdb-use-separate-io-buffer nil)
-  (set 'gdb-many-windows nil)
-
-
-  ;; org windows: Use frames not emacs windows
-  (set 'org-agenda-window-setup 'other-frame)
-  (set 'org-src-window-setup 'other-frame)
 
 
   (when (require 'magit nil 'noerror)
@@ -173,14 +180,6 @@ To disable completion popups entirely use the variable
   ;; Make sure completions buffer is buried after we are done with the minibuffer
   (add-hook 'minibuffer-exit-hook (lambda () (when (get-buffer "*Completions*")
                                           (bury-buffer "*Completions*"))))
-
-
-
-  ;; Use a single frame for ediff (without this you end up with an entire
-  ;; frame for the control buffer, this doesn't work well at all with tiling
-  ;; window managers).
-  (set 'ediff-window-setup-function 'ediff-setup-windows-plain)
-
   )
 
 
