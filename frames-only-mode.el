@@ -3,10 +3,10 @@
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
-;; Version: 0.3
-;; Package-Requires: ((dash "2.10.0") (names "20150618.0") (emacs "24.4"))
-;; Keywords: electric
-;; URL: https://github.com/davidshepherd7/electric-operator
+;; Version: 0.0.0
+;; Package-Requires: ((emacs "24"))
+;; Keywords: frames windows
+;; URL: https://github.com/davidshepherd7/frames-only-mode
 
 ;;; Commentary:
 
@@ -17,6 +17,8 @@
 ;; for a new frame is set to "emacsclient -c -n -e '(switch-to-buffer
 ;; nil)'". For other window managers something similar should work...
 
+
+;;; Code:
 
 
 
