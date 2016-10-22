@@ -1,8 +1,17 @@
+;;; frames-only-mode.el --- Use frames instead of emacs windows -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2015 Free Software Foundation, Inc.
+
+;; Author: David Shepherd <davidshepherd7@gmail.com>
+;; Version: 0.3
+;; Package-Requires: ((dash "2.10.0") (names "20150618.0") (emacs "24.4"))
+;; Keywords: electric
+;; URL: https://github.com/davidshepherd7/electric-operator
+
+;;; Commentary:
 
 ;; Collection of settings and code to use frames instead of emacs
 ;; "windows".
-
-
 
 ;; To automatically open a "useful" buffer in new frames xmonads binding
 ;; for a new frame is set to "emacsclient -c -n -e '(switch-to-buffer
@@ -180,3 +189,5 @@ To disable completion popups entirely use the variable
 
 
 (provide 'frames-only-mode)
+
+;;; frames-only-mode.el ends here
