@@ -11,12 +11,17 @@
 
 
 
-;; Options:
+;;; Options:
 
-(defvar frames-only-mode-kill-frame-when-buffer-killed-buffer-list
+(defgroup frames-only-mode '()
+  "Use frames instead of emacs windows."
+  :group 'frames)
+
+(defcustom frames-only-mode-kill-frame-when-buffer-killed-buffer-list
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
   "Buffer names for which the containing frame should be
- killed when the buffer is killed.")
+ killed when the buffer is killed."
+  :group 'frames-only-mode)
 
 
 (defcustom frames-only-mode-use-windows-for-completion t
@@ -29,13 +34,15 @@ Completion windows are always split horizontally (helm style).
 
 To disable completion popups entirely use the variable
 `completion-auto-help' for default emacs completion or
-`ido-completion-buffer' for ido-based completion. ")
+`ido-completion-buffer' for ido-based completion. "
+  :group 'frames-only-mode)
 
 (defcustom frames-only-mode-use-window-functions
   (list #'calendar)
   "A list of functions inside which new emacs windows should be created instead of frames.
 
-(i.e. pop-up-frames is let bound to nil, the default value).")
+(i.e. pop-up-frames is let bound to nil, the default value)."
+  :group 'frames-only-mode)
 
 
 
