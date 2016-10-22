@@ -13,7 +13,7 @@
 
 ;; Options:
 
-(defvar kill-frame-when-buffer-killed-buffer-list
+(defvar frames-only-mode-kill-frame-when-buffer-killed-buffer-list
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
   "Buffer names for which the containing frame should be
  killed when the buffer is killed.")
@@ -89,7 +89,7 @@ To disable completion popups entirely use the variable
   if there is only a single window in the frame), helps stop some
   packages spamming frames."
   (when (and (one-window-p)
-             (member (buffer-name) kill-frame-when-buffer-killed-buffer-list))
+             (member (buffer-name) frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
     (delete-frame)))
 
 (add-hook 'kill-buffer-hook 'kill-frame-if-current-buffer-matches)
@@ -101,7 +101,7 @@ To disable completion popups entirely use the variable
   (let ((buffer-to-bury (buffer-name)))
     ad-do-it
     (when (and (one-window-p)
-               (member buffer-to-bury kill-frame-when-buffer-killed-buffer-list))
+               (member buffer-to-bury frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
       (delete-frame))))
 
 
