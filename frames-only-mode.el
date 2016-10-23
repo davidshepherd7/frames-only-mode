@@ -102,12 +102,13 @@ To disable completion popups entirely use the variable
     (apply fun args)))
 
 
-(defun super-abort-recursive-edit ()
-  "kill any sub-windows and abort recursive edit."
+(defun frames-only-mode-abort-recursive-edit ()
+  "Close any sub-windows and abort recursive edit
+
+This is useful for closing temporary windows created by some commands."
   (interactive)
 
-  ;; Biggest window is probably the "main" one, select it and delete the
-  ;; rest.
+  ;; Biggest window is probably the "main" one, select it and delete the rest.
   (select-window (get-largest-window 't 'nil 'nil))
   (delete-other-windows)
 
@@ -148,9 +149,16 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 
 
 
+(defvar frames-only-mode-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-]") #'frames-only-mode-abort-recursive-edit)
+    map)
+  "Keymap for frames-only-mode.")
+
 (define-minor-mode frames-only-mode
   "Use frames instead of emacs windows."
   :global t
+  :keymap frames-only-mode-mode-map
 
   (if frames-only-mode
       (setq frames-only-mode--revert-fn
@@ -191,11 +199,6 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   (if frames-only-mode
       (mapc (lambda (fun) (advice-add fun :around #'frames-only-mode-advice-use-windows)) frames-only-mode-use-window-functions)
     (mapc (lambda (fun) (advice-remove fun #'frames-only-mode-advice-use-windows)) frames-only-mode-use-window-functions))
-
-
-  ;; Key bind to close sub-windows (e.g. as created by re-builder or
-  ;; calendar) with the same key as abort-recursive-edit.
-  (global-set-key [remap abort-recursive-edit] #'super-abort-recursive-edit)
 
 
   ;; Hacks to make other things play nice by killing the frame when certain
