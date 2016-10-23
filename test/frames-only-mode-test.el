@@ -34,3 +34,13 @@ Expr should be false, true, false respectively."
 (ert-deftest kill-buffer-hook ()
   (fom-rollback-test
    (seq-contains kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)))
+
+(ert-deftest magit-settings ()
+  ;;TODO
+  )
+
+(ert-deftest completion-popups ()
+  (fom-rollback-test
+   (advice-member-p #'frames-only-mode-advice-use-windows-for-completion #'minibuffer-completion-help))
+  (fom-rollback-test
+   (advice-member-p #'frames-only-mode-advice-use-windows-for-completion #'ido-completion-help)))

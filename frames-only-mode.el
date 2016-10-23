@@ -94,7 +94,7 @@ To disable completion popups entirely use the variable
     (delete-frame)))
 
 
-(defun advice-use-windows-for-completion (orig-fun &rest args)
+(defun frames-only-mode-advice-use-windows-for-completion (orig-fun &rest args)
   (let ((pop-up-frames (not frames-only-mode-use-windows-for-completion))
         (split-width-threshold 9999))
     (apply orig-fun args)))
@@ -187,8 +187,13 @@ To disable completion popups entirely use the variable
 
   ;; Advise completion popup functions to use windows instead of frames if
   ;; the custom setting is true.
-  (advice-add 'minibuffer-completion-help :around #'advice-use-windows-for-completion)
-  (advice-add 'ido-completion-help :around #'advice-use-windows-for-completion)
+  (if frames-only-mode
+      (advice-add #'minibuffer-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
+    (advice-remove #'minibuffer-completion-help #'frames-only-mode-advice-use-windows-for-completion))
+
+  (if frames-only-mode
+      (advice-add #'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
+    (advice-remove #'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion))
 
   ;; Make sure completions buffer is buried after we are done with the minibuffer
   (add-hook 'minibuffer-exit-hook (lambda () (when (get-buffer "*Completions*")
