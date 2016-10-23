@@ -109,6 +109,10 @@ To disable completion popups entirely use the variable
                (member buffer-to-bury frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
       (delete-frame))))
 
+(defun frames-only-mode-bury-completions ()
+  (when (get-buffer "*Completions*")
+    (bury-buffer "*Completions*")))
+
 
 
 
@@ -196,9 +200,10 @@ To disable completion popups entirely use the variable
     (advice-remove #'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion))
 
   ;; Make sure completions buffer is buried after we are done with the minibuffer
-  (add-hook 'minibuffer-exit-hook (lambda () (when (get-buffer "*Completions*")
-                                          (bury-buffer "*Completions*"))))
-  )
+  (if frames-only-mode
+      (add-hook 'minibuffer-exit-hook #'frames-only-mode-bury-completions)
+    (remove-hook 'minibuffer-exit-hook #'frames-only-mode-bury-completions)))
+
 
 
 (provide 'frames-only-mode)

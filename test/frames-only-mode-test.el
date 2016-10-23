@@ -44,3 +44,7 @@ Expr should be false, true, false respectively."
    (advice-member-p #'frames-only-mode-advice-use-windows-for-completion #'minibuffer-completion-help))
   (fom-rollback-test
    (advice-member-p #'frames-only-mode-advice-use-windows-for-completion #'ido-completion-help)))
+
+(ert-deftest bury-completions-hook ()
+  (fom-rollback-test
+   (seq-contains minibuffer-exit-hook #'frames-only-mode-bury-completions)))
