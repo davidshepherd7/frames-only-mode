@@ -7,6 +7,7 @@
 (package-file "frames-only-mode.el")
 
 (source melpa-stable)
+(source gnu)
 
 (development
  (depends-on "ert-runner")
