@@ -5,25 +5,17 @@
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 0.0.0
 ;; Package-Requires: ((emacs "24") (seq))
-;; Keywords: frames windows
+;; Keywords: frames, windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
-
-;;; Commentary:
-
-;; Collection of settings and code to use frames instead of emacs
-;; "windows".
-
-;; To automatically open a "useful" buffer in new frames xmonads binding
-;; for a new frame is set to "emacsclient -c -n -e '(switch-to-buffer
-;; nil)'". For other window managers something similar should work...
-
 
 ;;; Code:
 
 (require 'seq)
 
-
-;; Ensure that some variables we will be setting are loaded
+;; Ensure that some variables we will be setting are loaded. Strictly speaking
+;; we should use eval-after-load but for now I don't want to implement
+;; revertable-set (see below) combined with eval-after-load because it sounds
+;; like a nightmare.
 (require 'org-agenda)
 (require 'ediff-wind)
 

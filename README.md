@@ -1,17 +1,32 @@
+# Frames only mode
 
-A collection of settings (and a little code) for making emacs open things in frames (i.e. real windows) instead of internal emacs-windows. This allows it to work properly with an external window manager.
+[![travis](https://travis-ci.org/davidshepherd7/frames-only-mode.svg?branch=master)](https://travis-ci.org/davidshepherd7/frames-only-mode)
+
+An emacs global minor mode to use emacs frames (i.e. operating system windows)
+instead of emacs' internal windowing system. This combines well with tiling
+window managers.
+
+## Setup
+
+Install by dropping `frames-only-mode.el` into your load path, requiring it, and
+running `(frames-only-mode)` to toggle using frames.
+
+You will probably want a hotkey to open new emacs frames. Bind this shell
+command to automatically open a useful buffer in a new frame (usually your most
+recent unopened buffer):
+
+    emacsclient -c -n -e '(switch-to-buffer nil)'
+
+
+I strongly recommend running emacs as server-client and using helm, ivy or ido
+instead of the default completion interface.
 
 There's a fairly rough screencast showing the kind of things you can do with this [here](https://www.youtube.com/watch?v=vi1BwRYJr6k).
 
-Basic setup
------
 
-Clone the repository to a directory inside `~/.emacs.d` (or anywhere else in your load path) and add
-```emacs
-(load-file "~/.emacs.d/frames-only-mode/frames-only-mode.el")
-(use-package frames-only-mode)
-```
-somewhere in your config files.
+------------------------------------------------
+
+TODO: this update for rewrite.
 
 
 Setup and integrating with the windows manager
