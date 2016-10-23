@@ -48,7 +48,7 @@ To disable completion popups entirely use the variable
   :group 'frames-only-mode)
 
 (defcustom frames-only-mode-use-window-functions
-  (list #'calendar)
+  (list #'calendar #'report-emacs-bug)
   "A list of functions inside which new emacs windows should be created instead of frames.
 
 (i.e. pop-up-frames is let bound to nil, the default value)."
