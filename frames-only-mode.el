@@ -4,7 +4,7 @@
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 0.0.0
-;; Package-Requires: ((emacs "24"))
+;; Package-Requires: ((emacs "24") (let-mode))
 ;; Keywords: frames windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
@@ -19,6 +19,12 @@
 
 
 ;;; Code:
+
+(require 'let-mode)
+
+;; Ensure that some variables we will be setting are loaded
+(require 'org-agenda)
+(require 'ediff-wind)
 
 
 
@@ -58,7 +64,8 @@ To disable completion popups entirely use the variable
 
 
 
-;;; Helper functions
+(defvar frames-only-mode--revert-fn #'ignore
+  "Storage for function to revert changes to variables made by frames-only-mode")
 
 (defun frames-only-mode-advice-use-windows (fun &rest args)
   "Create new emacs windows instead of frames within this function"
@@ -109,41 +116,45 @@ To disable completion popups entirely use the variable
   "Use frames instead of emacs windows."
   :global t
 
-  (setq
-   ;; Make new frames instead of new windows, the main setting
-   pop-up-frames 'graphic-only
+  (if frames-only-mode
+      (setq frames-only-mode--revert-fn
+            (let-mode-revertable-set
+             ;; Make new frames instead of new windows, the main setting
+             'pop-up-frames 'graphic-only
 
 
-   ;; Focus follows mouse (for emacs windows) off to prevent crazy things
-   ;; happening when I click on e.g. compilation error links. Would do nothing
-   ;; interesting anyway if everything is working because there are no windows
-   ;; within frames.
-   mouse-autoselect-window nil
-   focus-follows-mouse nil
+             ;; Focus follows mouse (for emacs windows) off to prevent crazy things
+             ;; happening when I click on e.g. compilation error links. Would do nothing
+             ;; interesting anyway if everything is working because there are no windows
+             ;; within frames.
+             'mouse-autoselect-window nil
+             'focus-follows-mouse nil
 
-   ;; kill frames when a buffer is buried, makes most things play nice with
-   ;; frames
-   frame-auto-hide-function 'delete-frame
+             ;; kill frames when a buffer is buried, makes most things play nice with
+             ;; frames
+             'frame-auto-hide-function 'delete-frame
 
-   ;; gdb (gud) does things with windows by default, this stops some of it:
-   gdb-use-separate-io-buffer nil
-   gdb-many-windows nil
+             ;; gdb (gud) does things with windows by default, this stops some of it:
+             ;; 'gdb-use-separate-io-buffer nil
+             ;; 'gdb-many-windows nil
 
 
-   ;; org windows: Use frames not emacs windows
-   org-agenda-window-setup 'other-frame
-   org-src-window-setup 'other-frame
+             ;; org windows: Use frames not emacs windows
+             'org-agenda-window-setup 'other-frame
+             'org-src-window-setup 'other-frame
 
-   ;; Use a single frame for ediff (without this you end up with an entire
-   ;; frame for the control buffer, this doesn't work well at all with tiling
-   ;; window managers).
-   ediff-window-setup-function 'ediff-setup-windows-plain
-   )
+             ;; Use a single frame for ediff (without this you end up with an entire
+             ;; frame for the control buffer, this doesn't work well at all with tiling
+             ;; window managers).
+             'ediff-window-setup-function 'ediff-setup-windows-plain))
+    ;; else
+    (funcall frames-only-mode--revert-fn))
 
 
   ;; Disable in some functions as specified by customisation
-  (mapc (lambda (fun) (advice-add fun :around #'frames-only-mode-advice-use-windows))
-        frames-only-mode-use-window-functions)
+  (if frames-only-mode
+      (mapc (lambda (fun) (advice-add fun :around #'frames-only-mode-advice-use-windows)) frames-only-mode-use-window-functions)
+    (mapc (lambda (fun) (advice-remove fun #'frames-only-mode-advice-use-windows)) frames-only-mode-use-window-functions))
 
 
   ;; Key bind to close sub-windows (e.g. as created by re-builder or

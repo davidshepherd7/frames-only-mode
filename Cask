@@ -8,6 +8,9 @@
 
 (source melpa-stable)
 
+;; TODO publish let-mode properly
+(depends-on "let-mode" :git "https://github.com/davidshepherd7/let-mode.git")
+
 (development
  (depends-on "ert-runner")
  (depends-on "f")
