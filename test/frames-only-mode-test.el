@@ -5,44 +5,32 @@
 ;; Don't run these tests from within your own emacs: they may not rollback all
 ;; changes correctly (since this is what they are testing!).
 
+(require 'frames-only-mode)
+
+
+(defmacro fom-rollback-test (expr)
+  "Check expr before, during and after toggling frames-only-mode.
+
+Expr should be false, true, false respectively."
+  `(progn (should-not ,expr)
+          (unwind-protect
+              (progn
+                (frames-only-mode 1)
+                (should ,expr))
+            (frames-only-mode 0))
+          (should-not ,expr)))
+
 
 (ert-deftest variables-set-when-mode-runs ()
-
-  (should-not (equal pop-up-frames 'graphic-only))
-
-  (frames-only-mode)
-
-  (should (equal pop-up-frames 'graphic-only))
-
-  (frames-only-mode 0)
-
-  (should-not (equal pop-up-frames 'graphic-only)))
+  (fom-rollback-test (equal pop-up-frames 'graphic-only)))
 
 
 (ert-deftest advise-functions ()
   (defun fom/foo () pop-up-frames)
   (add-to-list 'frames-only-mode-use-window-functions #'fom/foo)
+  (fom-rollback-test (advice-member-p #'frames-only-mode-advice-use-windows #'fom/foo)))
 
-  (should-not (equal pop-up-frames 'graphic-only))
-  (should-not (equal (fom/foo) 'graphic-only))
-  (should-not (advice-member-p #'frames-only-mode-advice-use-windows #'fom/foo))
-
-  (frames-only-mode)
-  (should (advice-member-p #'frames-only-mode-advice-use-windows #'fom/foo))
-  (should-not (equal (fom/foo) 'graphic-only))
-
-  (frames-only-mode 0)
-  (should-not (advice-member-p #'frames-only-mode-advice-use-windows #'fom/foo))
-  (should-not (equal (fom/foo) 'graphic-only))
-  )
 
 (ert-deftest kill-buffer-hook ()
-
-  (should-not (seq-contains kill-buffer-hook #'kill-frame-if-current-buffer-matches))
-
-  (frames-only-mode)
-  (should (seq-contains kill-buffer-hook #'kill-frame-if-current-buffer-matches))
-
-  (frames-only-mode 0)
-  (should-not (seq-contains kill-buffer-hook #'kill-frame-if-current-buffer-matches))
-  )
+  (fom-rollback-test
+   (seq-contains kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)))
