@@ -31,9 +31,11 @@ Expr should be false, true, false respectively."
   (fom-rollback-test (advice-member-p #'frames-only-mode-advice-use-windows #'fom/foo)))
 
 
-(ert-deftest kill-buffer-hook ()
+(ert-deftest delete-frame-on-kill-or-bury ()
   (fom-rollback-test
-   (seq-contains kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)))
+   (seq-contains kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches))
+  (fom-rollback-test
+   (advice-member-p #'frames-only-mode-advice-delete-frame-on-bury #'bury-buffer)))
 
 (ert-deftest magit-settings ()
   ;;TODO

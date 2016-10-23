@@ -100,13 +100,16 @@ To disable completion popups entirely use the variable
     (apply orig-fun args)))
 
 
-(defadvice bury-buffer (around frames-only-mode-kill-frame-if-current-buffer-matches activate)
-  "Kill the frame when burying certain buffers (but only if there
-  is only a single window in the frame)."
+(defun frames-only-mode-advice-delete-frame-on-bury (orig-fun &rest args)
+  "Delete the frame when burying certain buffers.
+
+Only if there are no other windows in the frame, and if the buffer is in frames-only-mode-kill-frame-when-buffer-killed-buffer-list."
+  ;; Store the buffer name now because we can't get it after burying the buffer
   (let ((buffer-to-bury (buffer-name)))
-    ad-do-it
+    (apply orig-fun args)
     (when (and (one-window-p)
-               (member buffer-to-bury frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
+               (member buffer-to-bury
+                       frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
       (delete-frame))))
 
 (defun frames-only-mode-bury-completions ()
@@ -169,8 +172,11 @@ To disable completion popups entirely use the variable
   ;; Hacks to make other things play nice by killing the frame when certain
   ;; buffers are closed.
   (if frames-only-mode
-      (add-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
-    (remove-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches))
+      (progn
+        (add-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
+        (advice-add #'bury-buffer :around #'frames-only-mode-advice-delete-frame-on-bury))
+    (remove-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
+    (advice-remove #'bury-buffer #'frames-only-mode-advice-delete-frame-on-bury))
 
 
   (when (require 'magit nil 'noerror)
@@ -192,11 +198,10 @@ To disable completion popups entirely use the variable
   ;; Advise completion popup functions to use windows instead of frames if
   ;; the custom setting is true.
   (if frames-only-mode
-      (advice-add #'minibuffer-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
-    (advice-remove #'minibuffer-completion-help #'frames-only-mode-advice-use-windows-for-completion))
-
-  (if frames-only-mode
-      (advice-add #'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
+      (progn
+        (advice-add #'minibuffer-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
+        (advice-add #'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion))
+    (advice-remove #'minibuffer-completion-help #'frames-only-mode-advice-use-windows-for-completion)
     (advice-remove #'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion))
 
   ;; Make sure completions buffer is buried after we are done with the minibuffer
