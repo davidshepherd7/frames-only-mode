@@ -4,7 +4,7 @@
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 0.0.0
-;; Package-Requires: ((emacs "24") (let-mode))
+;; Package-Requires: ((emacs "24") (seq))
 ;; Keywords: frames windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
@@ -20,7 +20,8 @@
 
 ;;; Code:
 
-(require 'let-mode)
+(require 'seq)
+
 
 ;; Ensure that some variables we will be setting are loaded
 (require 'org-agenda)
@@ -61,11 +62,39 @@ To disable completion popups entirely use the variable
 (i.e. pop-up-frames is let bound to nil, the default value)."
   :group 'frames-only-mode)
 
-
 
+
+;;; Revertable-set helpers (from https://github.com/davidshepherd7/let-mode),
+;;; possible TODO: publish that code to melpa and use it here.
+
+(defun frames-only-mode-revertable-set (&rest args)
+  "As set but return a closure to revert the change"
+  (let* ((pairs (seq-partition args 2))
+         (vars (seq-map #'car pairs))
+         (values (seq-map #'cadr pairs)))
+    (frames-only-mode--revertable-set-helper vars values)))
+
+(defun frames-only-mode--revertable-set-helper (vars values)
+  (let ((initial-values (seq-mapn #'symbol-value vars))
+        (revert-done nil))
+    (seq-mapn #'set vars values)
+    (lambda ()
+      (when (not revert-done)
+        "Revert the variable values set by revertable-set"
+        (seq-mapn
+         (lambda (var value initial)
+           (when (equal (symbol-value var) value)
+             (set var initial)))
+         vars values initial-values))
+      (setq revert-done t))))
 
 (defvar frames-only-mode--revert-fn #'ignore
   "Storage for function to revert changes to variables made by frames-only-mode")
+
+
+
+
+;;; Other helpers
 
 (defun frames-only-mode-advice-use-windows (fun &rest args)
   "Create new emacs windows instead of frames within this function"
@@ -125,7 +154,7 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 
   (if frames-only-mode
       (setq frames-only-mode--revert-fn
-            (let-mode-revertable-set
+            (frames-only-mode-revertable-set
              ;; Make new frames instead of new windows, the main setting
              'pop-up-frames 'graphic-only
 
