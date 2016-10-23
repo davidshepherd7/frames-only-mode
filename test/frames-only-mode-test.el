@@ -35,3 +35,14 @@
   (should-not (advice-member-p #'frames-only-mode-advice-use-windows #'fom/foo))
   (should-not (equal (fom/foo) 'graphic-only))
   )
+
+(ert-deftest kill-buffer-hook ()
+
+  (should-not (seq-contains kill-buffer-hook #'kill-frame-if-current-buffer-matches))
+
+  (frames-only-mode)
+  (should (seq-contains kill-buffer-hook #'kill-frame-if-current-buffer-matches))
+
+  (frames-only-mode 0)
+  (should-not (seq-contains kill-buffer-hook #'kill-frame-if-current-buffer-matches))
+  )

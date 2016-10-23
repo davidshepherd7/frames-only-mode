@@ -85,7 +85,7 @@ To disable completion popups entirely use the variable
   (abort-recursive-edit))
 
 
-(defun kill-frame-if-current-buffer-matches ()
+(defun frames-only-mode-kill-frame-if-current-buffer-matches ()
   "Kill frames as well when certain buffers are closed (but only
   if there is only a single window in the frame), helps stop some
   packages spamming frames."
@@ -100,7 +100,7 @@ To disable completion popups entirely use the variable
     (apply orig-fun args)))
 
 
-(defadvice bury-buffer (around kill-frame-if-current-buffer-matches activate)
+(defadvice bury-buffer (around frames-only-mode-kill-frame-if-current-buffer-matches activate)
   "Kill the frame when burying certain buffers (but only if there
   is only a single window in the frame)."
   (let ((buffer-to-bury (buffer-name)))
@@ -164,7 +164,9 @@ To disable completion popups entirely use the variable
 
   ;; Hacks to make other things play nice by killing the frame when certain
   ;; buffers are closed.
-  (add-hook 'kill-buffer-hook 'kill-frame-if-current-buffer-matches)
+  (if frames-only-mode
+      (add-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
+    (remove-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches))
 
 
   (when (require 'magit nil 'noerror)
