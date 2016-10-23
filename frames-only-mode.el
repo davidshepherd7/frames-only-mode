@@ -170,6 +170,7 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
              ;; frames
              'frame-auto-hide-function 'delete-frame
 
+             ;; TODO: figure out why this didn't seem to work
              ;; gdb (gud) does things with windows by default, this stops some of it:
              ;; 'gdb-use-separate-io-buffer nil
              ;; 'gdb-many-windows nil
@@ -203,6 +204,8 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
     (advice-remove #'bury-buffer #'frames-only-mode-advice-delete-frame-on-bury))
 
 
+  ;; TODO: figure out how to revert these changes when the mode is disabled.
+  ;; What if the use loads magit after enabling this mode? :(
   (when (require 'magit nil 'noerror)
 
     ;; Use the current frame/window to enter the magit commit message
