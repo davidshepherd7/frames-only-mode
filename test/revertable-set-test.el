@@ -4,7 +4,7 @@
   (let ((lm/foo 1)
         (lm/revert-fn nil))
     ;; Set
-    (setq lm/revert-fn (let-mode-revertable-set 'lm/foo 2))
+    (setq lm/revert-fn (frames-only-mode-revertable-set 'lm/foo 2))
 
     ;; Something else sets the variable
     (setq lm/foo 10)
@@ -25,8 +25,8 @@
         (lm/bar "a")
         (lm/revert-fn nil))
     ;; Set
-    (setq lm/revert-fn (let-mode-revertable-set 'lm/foo 2
-                                                'lm/bar "b"))
+    (setq lm/revert-fn (frames-only-mode-revertable-set 'lm/foo 2
+                                                        'lm/bar "b"))
     (should (equal lm/foo 2))
     (should (equal lm/bar "b"))
 
