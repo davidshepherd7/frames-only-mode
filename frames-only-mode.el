@@ -1,16 +1,15 @@
-;;; frames-only-mode.el --- Use frames instead of emacs windows -*- lexical-binding: t; -*-
+;;; frames-only-mode.el --- Use frames instead of Emacs windows -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 0.0.0
-;; Package-Requires: ((emacs "24") (seq))
+;; Package-Requires: ((emacs "24") (seq "2.3"))
 ;; Keywords: frames, windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
 
 ;;; Commentary:
-;;
 
 ;;; Code:
 
