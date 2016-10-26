@@ -37,10 +37,6 @@ Expr should be false, true, false respectively."
   (fom-rollback-test
    (advice-member-p #'frames-only-mode-advice-delete-frame-on-bury #'bury-buffer)))
 
-(ert-deftest magit-settings ()
-  ;;TODO
-  )
-
 (ert-deftest completion-popups ()
   (fom-rollback-test
    (advice-member-p #'frames-only-mode-advice-use-windows-for-completion #'minibuffer-completion-help))
@@ -50,3 +46,9 @@ Expr should be false, true, false respectively."
 (ert-deftest bury-completions-hook ()
   (fom-rollback-test
    (seq-contains minibuffer-exit-hook #'frames-only-mode-bury-completions)))
+
+
+(require 'magit-commit)
+(ert-deftest magit-settings ()
+  (fom-rollback-test
+   (equal magit-commit-show-diff nil)))

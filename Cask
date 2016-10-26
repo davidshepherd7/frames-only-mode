@@ -14,4 +14,7 @@
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "espuds")
+
+ ;; For testing interactions
+ (depends-on "magit")
  )

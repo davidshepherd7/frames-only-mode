@@ -83,6 +83,8 @@ To disable completion popups entirely use the variable
 (defvar frames-only-mode--revert-fn #'ignore
   "Storage for function to revert changes to variables made by frames-only-mode")
 
+(defvar frames-only-mode--revert-magit-fn #'ignore
+  "Storage for function to revert changes to magit configuration made by frames-only-mode")
 
 
 
@@ -206,20 +208,16 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 
   ;; TODO: figure out how to revert these changes when the mode is disabled.
   ;; What if the use loads magit after enabling this mode? :(
-  (when (require 'magit nil 'noerror)
-
-    ;; Use the current frame/window to enter the magit commit message
-    (set 'magit-server-window-for-commit nil)
-
-    ;; Don't auto popup a magit diff buffer when commiting, can still get it
-    ;; if needed with C-c C-d. The variable name for this changed in magit
-    ;; version 2.30, so for now we will set both variables (28/11/2015).
-    ;; TODO: remove in a year or two.
-    (if (boundp 'magit-commit-show-diff)
-        (set 'magit-commit-show-diff nil)
-      (set 'magit-diff-auto-show nil))
-
-    )
+  (if frames-only-mode
+      (when (require 'magit-commit nil 'noerror)
+        (setq frames-only-mode--revert-magit-fn
+              (frames-only-mode-revertable-set
+               ;; Don't auto popup a magit diff buffer when commiting, can still
+               ;; get it if needed with C-c C-d. The variable name for this
+               ;; changed in magit version 2.30 (~November 2015) so we are not
+               ;; compatible with older versions.
+               'magit-commit-show-diff nil)))
+    (funcall frames-only-mode--revert-magit-fn))
 
 
   ;; Advise completion popup functions to use windows instead of frames if
