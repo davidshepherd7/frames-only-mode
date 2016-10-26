@@ -8,6 +8,10 @@
 ;; Keywords: frames, windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
+
+;;; Commentary:
+;;
+
 ;;; Code:
 
 (require 'seq)
@@ -29,13 +33,12 @@
 
 (defcustom frames-only-mode-kill-frame-when-buffer-killed-buffer-list
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
-  "Buffer names for which the containing frame should be
- killed when the buffer is killed."
+  "Buffer names for which the containing frame should be killed when the buffer is killed."
   :group 'frames-only-mode)
 
 
 (defcustom frames-only-mode-use-windows-for-completion t
-  "Use emacs windows for display of completions.
+  "Use Emacs windows for display of completions.
 
 This is useful because a new completion frame would steal
 window manager focus.
@@ -43,15 +46,15 @@ window manager focus.
 Completion windows are always split horizontally (helm style).
 
 To disable completion popups entirely use the variable
-`completion-auto-help' for default emacs completion or
-`ido-completion-buffer' for ido-based completion. "
+`completion-auto-help' for default Emacs completion or
+`ido-completion-buffer' for ido-based completion."
   :group 'frames-only-mode)
 
 (defcustom frames-only-mode-use-window-functions
-  (list #'calendar #'report-emacs-bug)
+  (list #'calendar #'report-emacs-bug #'checkdoc)
   "A list of functions inside which new emacs windows should be created instead of frames.
 
-(i.e. pop-up-frames is let bound to nil, the default value)."
+\(i.e. pop-up-frames is let bound to nil, the default value)."
   :group 'frames-only-mode)
 
 
@@ -60,7 +63,7 @@ To disable completion popups entirely use the variable
 ;;; possible TODO: publish that code to melpa and use it here.
 
 (defun frames-only-mode-revertable-set (&rest args)
-  "As set but return a closure to revert the change"
+  "As set but return a closure to revert the change."
   (let* ((pairs (seq-partition args 2))
          (vars (seq-map #'car pairs))
          (values (seq-map #'cadr pairs)))
@@ -81,23 +84,23 @@ To disable completion popups entirely use the variable
       (setq revert-done t))))
 
 (defvar frames-only-mode--revert-fn #'ignore
-  "Storage for function to revert changes to variables made by frames-only-mode")
+  "Storage for function to revert changes to variables made by ‘frames-only-mode’.")
 
 (defvar frames-only-mode--revert-magit-fn #'ignore
-  "Storage for function to revert changes to magit configuration made by frames-only-mode")
+  "Storage for function to revert changes to magit configuration made by ‘frames-only-mode’.")
 
 
 
 ;;; Other helpers
 
 (defun frames-only-mode-advice-use-windows (fun &rest args)
-  "Create new emacs windows instead of frames within this function"
+  "Create new emacs windows instead of frames within this function."
   (let ((pop-up-frames nil))
     (apply fun args)))
 
 
 (defun frames-only-mode-abort-recursive-edit ()
-  "Close any sub-windows and abort recursive edit
+  "Close any sub-windows and abort recursive edit.
 
 This is useful for closing temporary windows created by some commands."
   (interactive)
@@ -110,15 +113,17 @@ This is useful for closing temporary windows created by some commands."
 
 
 (defun frames-only-mode-kill-frame-if-current-buffer-matches ()
-  "Kill frames as well when certain buffers are closed (but only
-  if there is only a single window in the frame), helps stop some
-  packages spamming frames."
+  "Kill frames as well when certain buffers are closed.
+
+Only if there is only a single window in the frame, helps stop some
+packages spamming frames."
   (when (and (one-window-p)
              (member (buffer-name) frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
     (delete-frame)))
 
 
 (defun frames-only-mode-advice-use-windows-for-completion (orig-fun &rest args)
+  "Advise a completion function to not use frames."
   (let ((pop-up-frames (not frames-only-mode-use-windows-for-completion))
         (split-width-threshold 9999))
     (apply orig-fun args)))
@@ -147,7 +152,7 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-]") #'frames-only-mode-abort-recursive-edit)
     map)
-  "Keymap for frames-only-mode.")
+  "Keymap for ‘frames-only-mode’.")
 
 (define-minor-mode frames-only-mode
   "Use frames instead of emacs windows."
