@@ -153,6 +153,7 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
     map)
   "Keymap for ‘frames-only-mode’.")
 
+;;;###autoload
 (define-minor-mode frames-only-mode
   "Use frames instead of emacs windows."
   :global t
