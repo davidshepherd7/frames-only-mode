@@ -52,3 +52,8 @@ Expr should be false, true, false respectively."
 (ert-deftest magit-settings ()
   (fom-rollback-test
    (equal magit-commit-show-diff nil)))
+
+(require 'flycheck)
+(ert-deftest flycheck-settings ()
+  (fom-rollback-test
+   (equal flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors)))

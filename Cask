@@ -17,4 +17,5 @@
 
  ;; For testing interactions
  (depends-on "magit")
+ (depends-on "flycheck")
  )

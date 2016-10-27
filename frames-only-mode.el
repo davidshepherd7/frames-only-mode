@@ -88,6 +88,9 @@ To disable completion popups entirely use the variable
 (defvar frames-only-mode--revert-magit-fn #'ignore
   "Storage for function to revert changes to magit configuration made by ‘frames-only-mode’.")
 
+(defvar frames-only-mode--revert-flycheck-fn #'ignore
+  "Storage for function to revert changes to magit configuration made by ‘frames-only-mode’.")
+
 
 
 ;;; Other helpers
@@ -144,6 +147,8 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   (when (get-buffer "*Completions*")
     (bury-buffer "*Completions*")))
 
+(defun frames-only-mode-flycheck-display-errors (errors)
+  (message "%s" (mapcar #'flycheck-error-format-message-and-id errors)))
 
 
 
@@ -223,6 +228,16 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
                ;; compatible with older versions.
                'magit-commit-show-diff nil)))
     (funcall frames-only-mode--revert-magit-fn))
+
+  (if frames-only-mode
+      (when (require 'flycheck nil 'noerror)
+        (setq frames-only-mode--revert-flycheck-fn
+              (frames-only-mode-revertable-set
+
+               ;; Don't pop an errors buffer, it's really annoying, instead
+               ;; format a message in the minibuffer
+               'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors)))
+    (funcall frames-only-mode--revert-flycheck-fn))
 
 
   ;; Advise completion popup functions to use windows instead of frames if
