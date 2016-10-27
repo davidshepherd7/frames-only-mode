@@ -7,6 +7,12 @@
 
 (require 'frames-only-mode)
 
+(defmacro with-frames-only-mode (&rest body)
+  `(unwind-protect
+       (progn
+         (frames-only-mode 1)
+         ,@body)
+     (frames-only-mode 0)))
 
 (defmacro fom-rollback-test (expr)
   "Check expr before, during and after toggling frames-only-mode.
@@ -53,7 +59,27 @@ Expr should be false, true, false respectively."
   (fom-rollback-test
    (equal magit-commit-show-diff nil)))
 
+
 (require 'flycheck)
 (ert-deftest flycheck-settings ()
   (fom-rollback-test
    (equal flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors)))
+
+(ert-deftest flycheck-displays-errors-in-minibuffer ()
+  (with-frames-only-mode
+   (flycheck-display-errors (list (flycheck-error-new
+                                   :buffer "buff"
+                                   :checker "check"
+                                   :filename "file"
+                                   :line 1
+                                   :message "Phasellus neque orci, porta a, aliquet quis, semper a, massa.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nullam rutrum.  Phasellus purus.  In id erat non orci commodo lobortis.  "
+                                   :level 'error)
+                                  (flycheck-error-new
+                                   :buffer "buff"
+                                   :checker "check"
+                                   :filename "file"
+                                   :line 1
+                                   :message "Sed id ligula quis est convallis tempor."
+                                   :level 'error)
+                                  ))
+   (should (equal (length (window-list)) 1))))
