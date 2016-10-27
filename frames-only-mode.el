@@ -4,7 +4,7 @@
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 0.0.0
-;; Package-Requires: ((emacs "24") (seq "2.3"))
+;; Package-Requires: ((emacs "24.4") (seq "2.3"))
 ;; Keywords: frames, windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
