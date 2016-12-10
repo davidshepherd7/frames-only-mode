@@ -195,7 +195,14 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
              ;; Use a single frame for ediff (without this you end up with an entire
              ;; frame for the control buffer, this doesn't work well at all with tiling
              ;; window managers).
-             'ediff-window-setup-function 'ediff-setup-windows-plain))
+             'ediff-window-setup-function 'ediff-setup-windows-plain
+
+
+             ;; When using ido-switch-buffer: open buffers in the current frame
+             ;; rather than raising any existing frame (the default behaviour is
+             ;; to only do this with emacs windows but switch to existing
+             ;; frames).
+             'ido-default-buffer-method 'selected-window))
     ;; else
     (funcall frames-only-mode--revert-fn))
 
