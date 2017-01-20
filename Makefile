@@ -12,13 +12,16 @@ build :
 clean :
 	@rm -f *.elc
 
-test: build test-unit test-integration
+test: build test-unit test-integration test-load
 
 test-unit:
 	cask exec ert-runner
 
 test-integration:
 	cask exec ecukes
+
+test-load:
+	cask ${EMACS} -Q --script "load-test/loading-test.el"
 
 install:
 	${CASK} install

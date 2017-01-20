@@ -15,13 +15,6 @@
 
 (require 'seq)
 
-;; Ensure that some variables we will be setting are loaded. Strictly speaking
-;; we should use eval-after-load but for now I don't want to implement
-;; revertable-set (see below) combined with eval-after-load because it sounds
-;; like a nightmare.
-(require 'org-agenda)
-(require 'ediff-wind)
-
 
 
 ;;; Options:
@@ -69,9 +62,10 @@ To disable completion popups entirely use the variable
     (frames-only-mode--revertable-set-helper vars values)))
 
 (defun frames-only-mode--revertable-set-helper (vars values)
-  (let ((initial-values (seq-mapn #'symbol-value vars))
-        (revert-done nil))
-    (seq-mapn #'set vars values)
+  (let* ((existing-vars (seq-filter #'boundp vars))
+         (initial-values (seq-mapn #'symbol-value existing-vars))
+         (revert-done nil))
+    (seq-mapn #'set existing-vars values)
     (lambda ()
       (when (not revert-done)
         "Revert the variable values set by revertable-set"
@@ -79,7 +73,7 @@ To disable completion popups entirely use the variable
          (lambda (var value initial)
            (when (equal (symbol-value var) value)
              (set var initial)))
-         vars values initial-values))
+         existing-vars values initial-values))
       (setq revert-done t))))
 
 (defvar frames-only-mode--revert-fn #'ignore
@@ -226,24 +220,22 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   ;; TODO: figure out how to revert these changes when the mode is disabled.
   ;; What if the use loads magit after enabling this mode? :(
   (if frames-only-mode
-      (when (require 'magit-commit nil 'noerror)
-        (setq frames-only-mode--revert-magit-fn
-              (frames-only-mode-revertable-set
-               ;; Don't auto popup a magit diff buffer when commiting, can still
-               ;; get it if needed with C-c C-d. The variable name for this
-               ;; changed in magit version 2.30 (~November 2015) so we are not
-               ;; compatible with older versions.
-               'magit-commit-show-diff nil)))
+      (setq frames-only-mode--revert-magit-fn
+            (frames-only-mode-revertable-set
+             ;; Don't auto popup a magit diff buffer when commiting, can still
+             ;; get it if needed with C-c C-d. The variable name for this
+             ;; changed in magit version 2.30 (~November 2015) so we are not
+             ;; compatible with older versions.
+             'magit-commit-show-diff nil))
     (funcall frames-only-mode--revert-magit-fn))
 
   (if frames-only-mode
-      (when (require 'flycheck nil 'noerror)
-        (setq frames-only-mode--revert-flycheck-fn
-              (frames-only-mode-revertable-set
+      (setq frames-only-mode--revert-flycheck-fn
+            (frames-only-mode-revertable-set
 
-               ;; Don't pop an errors buffer, it's really annoying, instead
-               ;; format a message in the minibuffer
-               'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors)))
+             ;; Don't pop an errors buffer, it's really annoying, instead
+             ;; format a message in the minibuffer
+             'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors))
     (funcall frames-only-mode--revert-flycheck-fn))
 
 
