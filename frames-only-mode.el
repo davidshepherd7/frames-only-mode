@@ -83,7 +83,7 @@ To disable completion popups entirely use the variable
   "Storage for function to revert changes to magit configuration made by ‘frames-only-mode’.")
 
 (defvar frames-only-mode--revert-flycheck-fn #'ignore
-  "Storage for function to revert changes to magit configuration made by ‘frames-only-mode’.")
+  "Storage for function to revert changes to flycheck configuration made by ‘frames-only-mode’.")
 
 
 
@@ -216,9 +216,6 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
     (remove-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
     (advice-remove #'bury-buffer #'frames-only-mode-advice-delete-frame-on-bury))
 
-
-  ;; TODO: figure out how to revert these changes when the mode is disabled.
-  ;; What if the use loads magit after enabling this mode? :(
   (if frames-only-mode
       (setq frames-only-mode--revert-magit-fn
             (frames-only-mode-revertable-set
@@ -232,7 +229,6 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   (if frames-only-mode
       (setq frames-only-mode--revert-flycheck-fn
             (frames-only-mode-revertable-set
-
              ;; Don't pop an errors buffer, it's really annoying, instead
              ;; format a message in the minibuffer
              'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors))
