@@ -202,7 +202,7 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
     (bury-buffer "*Completions*")))
 
 (defun frames-only-mode-flycheck-display-errors (errors)
-  (message "%s" (mapcar #'flycheck-error-format-message-and-id errors)))
+  (message "%s" (mapcar 'flycheck-error-format-message-and-id errors)))
 
 
 
@@ -242,9 +242,9 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   (if frames-only-mode
       (progn
         (advice-add #'minibuffer-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
-        (advice-add #'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion))
+        (advice-add 'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion))
     (advice-remove #'minibuffer-completion-help #'frames-only-mode-advice-use-windows-for-completion)
-    (advice-remove #'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion))
+    (advice-remove 'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion))
 
   ;; Make sure completions buffer is buried after we are done with the minibuffer
   (if frames-only-mode
