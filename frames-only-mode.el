@@ -161,7 +161,7 @@ This is useful for closing temporary windows created by some commands."
   (interactive)
 
   ;; Biggest window is probably the "main" one, select it and delete the rest.
-  (select-window (get-largest-window 't 'nil 'nil))
+  (select-window (get-largest-window))
   (delete-other-windows)
 
   (abort-recursive-edit))
