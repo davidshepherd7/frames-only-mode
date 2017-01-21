@@ -86,12 +86,6 @@ To disable completion popups entirely use the variable
 (defvar frames-only-mode--revert-fn #'ignore
   "Storage for function to revert changes to variables made by ‘frames-only-mode’.")
 
-(defvar frames-only-mode--revert-magit-fn #'ignore
-  "Storage for function to revert changes to magit configuration made by ‘frames-only-mode’.")
-
-(defvar frames-only-mode--revert-flycheck-fn #'ignore
-  "Storage for function to revert changes to flycheck configuration made by ‘frames-only-mode’.")
-
 
 
 ;;; Other helpers
@@ -171,7 +165,6 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
              ;; Make new frames instead of new windows, the main setting
              'pop-up-frames 'graphic-only
 
-
              ;; Focus follows mouse (for emacs windows) off to prevent crazy things
              ;; happening when I click on e.g. compilation error links. Would do nothing
              ;; interesting anyway if everything is working because there are no windows
@@ -188,7 +181,6 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
              ;; 'gdb-use-separate-io-buffer nil
              ;; 'gdb-many-windows nil
 
-
              ;; org windows: Use frames not emacs windows
              'org-agenda-window-setup 'other-frame
              'org-src-window-setup 'other-frame
@@ -198,12 +190,22 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
              ;; window managers).
              'ediff-window-setup-function 'ediff-setup-windows-plain
 
-
              ;; When using ido-switch-buffer: open buffers in the current frame
              ;; rather than raising any existing frame (the default behaviour is
              ;; to only do this with emacs windows but switch to existing
              ;; frames).
-             'ido-default-buffer-method 'selected-window))
+             'ido-default-buffer-method 'selected-window
+
+             ;; Don't auto popup a magit diff buffer when commiting, can still
+             ;; get it if needed with C-c C-d. The variable name for this
+             ;; changed in magit version 2.30 (~November 2015) so we are not
+             ;; compatible with older versions.
+             'magit-commit-show-diff nil
+
+             ;; Don't pop an errors buffer, it's really annoying, instead
+             ;; format a message in the minibuffer
+             'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors
+             ))
     ;; else
     (funcall frames-only-mode--revert-fn))
 
@@ -213,7 +215,6 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
       (mapc (lambda (fun) (advice-add fun :around #'frames-only-mode-advice-use-windows)) frames-only-mode-use-window-functions)
     (mapc (lambda (fun) (advice-remove fun #'frames-only-mode-advice-use-windows)) frames-only-mode-use-window-functions))
 
-
   ;; Hacks to make other things play nice by killing the frame when certain
   ;; buffers are closed.
   (if frames-only-mode
@@ -222,25 +223,6 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
         (advice-add #'bury-buffer :around #'frames-only-mode-advice-delete-frame-on-bury))
     (remove-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
     (advice-remove #'bury-buffer #'frames-only-mode-advice-delete-frame-on-bury))
-
-  (if frames-only-mode
-      (setq frames-only-mode--revert-magit-fn
-            (frames-only-mode-revertable-set
-             ;; Don't auto popup a magit diff buffer when commiting, can still
-             ;; get it if needed with C-c C-d. The variable name for this
-             ;; changed in magit version 2.30 (~November 2015) so we are not
-             ;; compatible with older versions.
-             'magit-commit-show-diff nil))
-    (funcall frames-only-mode--revert-magit-fn))
-
-  (if frames-only-mode
-      (setq frames-only-mode--revert-flycheck-fn
-            (frames-only-mode-revertable-set
-             ;; Don't pop an errors buffer, it's really annoying, instead
-             ;; format a message in the minibuffer
-             'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors))
-    (funcall frames-only-mode--revert-flycheck-fn))
-
 
   ;; Advise completion popup functions to use windows instead of frames if
   ;; the custom setting is true.
