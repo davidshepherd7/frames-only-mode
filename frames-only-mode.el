@@ -57,12 +57,12 @@ To disable completion popups entirely use the variable
 
 (defun frames-only-mode-revertable-set (&rest args)
   "As set but return a closure to revert the change."
-
-  ;; Transform to list of (var value initial-value) and call helper function
-  (thread-last (seq-partition args 2)
-    (seq-filter (lambda (s) (boundp (car s))))
-    (seq-map (lambda (s) (append s (list (symbol-value (car s))))))
-    (frames-only-mode--revertable-set-helper)))
+  ;; Transform to list of (var value initial-value) and call helper function. I
+  ;; wish we had a back-portable thread-last macro...
+  (let* ((var-vals (seq-partition args 2))
+         (existing-var-vals (seq-filter (lambda (s) (boundp (car s))) var-vals))
+         (var-val-initials (seq-map (lambda (s) (append s (list (symbol-value (car s))))) existing-var-vals)))
+    (frames-only-mode--revertable-set-helper var-val-initials)))
 
 (defun frames-only-mode--revertable-set-helper (var-value-initials)
   "Internal function"
