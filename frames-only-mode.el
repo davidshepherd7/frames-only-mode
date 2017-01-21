@@ -13,6 +13,8 @@
 
 ;;; Code:
 
+(require 'cl)
+(require 'subr-x)
 (require 'seq)
 
 
@@ -56,25 +58,30 @@ To disable completion popups entirely use the variable
 
 (defun frames-only-mode-revertable-set (&rest args)
   "As set but return a closure to revert the change."
-  (let* ((pairs (seq-partition args 2))
-         (vars (seq-map #'car pairs))
-         (values (seq-map #'cadr pairs)))
-    (frames-only-mode--revertable-set-helper vars values)))
 
-(defun frames-only-mode--revertable-set-helper (vars values)
-  (let* ((existing-vars (seq-filter #'boundp vars))
-         (initial-values (seq-mapn #'symbol-value existing-vars))
-         (revert-done nil))
-    (seq-mapn #'set existing-vars values)
+  ;; Transform to list of (var value initial-value) and call helper function
+  (thread-last (seq-partition args 2)
+    (seq-filter (lambda (s) (boundp (car s))))
+    (seq-map (lambda (s) (append s (list (symbol-value (car s))))))
+    (frames-only-mode--revertable-set-helper)))
+
+(defun frames-only-mode--revertable-set-helper (var-value-initials)
+  "Internal function"
+  (let ((revert-done nil)
+        (revert-var-fn
+         (lambda (s)
+           (when (equal (symbol-value (car s)) (cadr s))
+             (set (car s) (caddr s))))))
+
+    ;; Set each var
+    (seq-map (lambda (s) (set (car s) (cadr s))) var-value-initials)
+
+    ;; Return a function to revert the changes
     (lambda ()
+      "Revert the variable values set by revertable-set"
       (when (not revert-done)
-        "Revert the variable values set by revertable-set"
-        (seq-mapn
-         (lambda (var value initial)
-           (when (equal (symbol-value var) value)
-             (set var initial)))
-         existing-vars values initial-values))
-      (setq revert-done t))))
+        (seq-map revert-var-fn var-value-initials)
+        (setq revert-done t)))))
 
 (defvar frames-only-mode--revert-fn #'ignore
   "Storage for function to revert changes to variables made by ‘frames-only-mode’.")
