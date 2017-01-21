@@ -13,7 +13,6 @@
 
 ;;; Code:
 
-(require 'cl)
 (require 'subr-x)
 (require 'seq)
 
@@ -71,7 +70,8 @@ To disable completion popups entirely use the variable
         (revert-var-fn
          (lambda (s)
            (when (equal (symbol-value (car s)) (cadr s))
-             (set (car s) (caddr s))))))
+             ;; core emacs doesn't have caddr, why? :(
+             (set (car s) (cadr (cdr s)))))))
 
     ;; Set each var
     (seq-map (lambda (s) (set (car s) (cadr s))) var-value-initials)
