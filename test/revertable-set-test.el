@@ -50,7 +50,7 @@
                           (lm/baz 7))))
 
     (should (equal lm/foo 2))
-    (should-not (boundp 'lm/bar))
+    (should (equal lm/bar "b"))
     (should (equal lm/baz 7))
 
     (funcall lm/revert-fn)

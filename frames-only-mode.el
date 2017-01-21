@@ -100,8 +100,6 @@ To disable completion popups entirely use the variable
 
 Each entry should be of the form `(list variable-symbol value)'.
 
-Variables which don't exist will be ignored.
-
 If you find any settings that you think will be useful to others using this
 mode please open an issue at https://github.com/davidshepherd7/frames-only-mode/issues
 to let me know."
@@ -109,15 +107,18 @@ to let me know."
 
 
 
-;;; Revertable-set helpers (from https://github.com/davidshepherd7/let-mode),
-;;; possible TODO: publish that code to melpa and use it here.
-
 (defun frames-only-mode-revertable-set (var-vals)
-  "As set but return a closure to revert the change."
+  "Like set but return a closure to revert the change.
+
+In accordance with https://www.gnu.org/software/emacs/manual/html_node/elisp/Hooks-for-Loading.html
+we even set variables that are not currently bound, but we unbind them again on revert."
   ;; Transform to list of (var value initial-value) and call helper function. I
   ;; wish we had a back-portable thread-last macro...
-  (let* ((existing-var-vals (seq-filter (lambda (s) (boundp (car s))) var-vals))
-         (var-val-initials (seq-map (lambda (s) (append s (list (symbol-value (car s))))) existing-var-vals)))
+  (let ((var-val-initials (seq-map (lambda (s) (append s
+                                                  (list (when (boundp (car s))
+                                                          (symbol-value (car s)))
+                                                        (boundp (car s)))))
+                                   var-vals)))
     (frames-only-mode--revertable-set-helper var-val-initials)))
 
 (defun frames-only-mode--revertable-set-helper (var-value-initials)
@@ -127,7 +128,9 @@ to let me know."
          (lambda (s)
            (when (equal (symbol-value (car s)) (cadr s))
              ;; core emacs doesn't have caddr, why? :(
-             (set (car s) (cadr (cdr s)))))))
+             (if (cadr (cdr (cdr s)))
+                 (set (car s) (cadr (cdr s)))
+               (makunbound (car s)))))))
 
     ;; Set each var
     (seq-map (lambda (s) (set (car s) (cadr s))) var-value-initials)

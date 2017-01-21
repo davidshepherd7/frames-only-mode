@@ -37,6 +37,8 @@ running the espuds tests."
   (require 'frames-only-mode (f-expand "frames-only-mode.el" (f-parent (f-dirname (f-this-file)))))
   (frames-only-mode t)
   (should frames-only-mode)
+  ;; Appropriate vars should have been set anyway
+  (should (equal flycheck-display-errors-function 'frames-only-mode-flycheck-display-errors))
   (frames-only-mode 0)
 
   ;; And we still should not have loaded them
