@@ -18,8 +18,8 @@ running `(frames-only-mode)` to enable the (global) minor mode.
 
 In combination with `frames-only-mode` I recommend:
 
-* Running emacs as [server-client](http://wikemacs.org/wiki/Emacs_server)
-* Binding a hotkey to open new emacs frames
+* Running emacs as [server-client](http://wikemacs.org/wiki/Emacs_server).
+* Binding a hotkey to open new emacs frames (see below).
 * Using [helm](https://github.com/emacs-helm/helm),
   [ivy](https://github.com/abo-abo/swiper) or
   [ido](https://www.masteringemacs.org/article/introduction-to-ido-mode) instead
