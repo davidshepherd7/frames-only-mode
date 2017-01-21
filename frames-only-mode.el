@@ -44,7 +44,7 @@ To disable completion popups entirely use the variable
 
 (defcustom frames-only-mode-use-window-functions
   (list #'calendar #'report-emacs-bug #'checkdoc)
-  "A list of functions inside which new emacs windows should be created instead of frames.
+  "List of functions inside which new emacs windows should be created instead of frames.
 
 \(i.e. pop-up-frames is let bound to nil, the default value)."
   :group 'frames-only-mode)
@@ -95,7 +95,7 @@ To disable completion popups entirely use the variable
    ;; Don't pop an errors buffer, it's really annoying, instead
    ;; format a message in the minibuffer
    (list 'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors))
-  "List of configuration variables set by frames-only-mode
+  "List of configuration variables set by frames-only-mode.
 
 Each entry should be of the form `(list variable-symbol value)'.
 
@@ -121,7 +121,7 @@ we even set variables that are not currently bound, but we unbind them again on 
     (frames-only-mode--revertable-set-helper var-val-initials)))
 
 (defun frames-only-mode--revertable-set-helper (var-value-initials)
-  "Internal function"
+  "Internal function."
   (let ((revert-done nil)
         (revert-var-fn
          (lambda (s)
@@ -149,7 +149,7 @@ we even set variables that are not currently bound, but we unbind them again on 
 ;;; Other helpers
 
 (defun frames-only-mode-advice-use-windows (fun &rest args)
-  "Create new emacs windows instead of frames within this function."
+  "Create new emacs windows instead of frames within this FUN."
   (let ((pop-up-frames nil))
     (apply fun args)))
 
