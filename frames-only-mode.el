@@ -50,17 +50,73 @@ To disable completion popups entirely use the variable
 \(i.e. pop-up-frames is let bound to nil, the default value)."
   :group 'frames-only-mode)
 
+
+(defcustom frames-only-mode-configuration-variables
+  (list
+   ;; Make new frames instead of new windows, the main setting
+   (list 'pop-up-frames 'graphic-only)
+
+   ;; Focus follows mouse (for emacs windows) off to prevent crazy things
+   ;; happening when I click on e.g. compilation error links. Would do nothing
+   ;; interesting anyway if everything is working because there are no windows
+   ;; within frames.
+   (list 'mouse-autoselect-window nil)
+   (list 'focus-follows-mouse nil)
+
+   ;; kill frames when a buffer is buried, makes most things play nice with
+   ;; frames
+   (list 'frame-auto-hide-function 'delete-frame)
+
+   ;; TODO: figure out why this didn't seem to work
+   ;; gdb (gud) does things with windows by default, this stops some of it:
+   ;; 'gdb-use-separate-io-buffer nil
+   ;; 'gdb-many-windows nil
+
+   ;; org windows: Use frames not emacs windows
+   (list 'org-agenda-window-setup 'other-frame)
+   (list 'org-src-window-setup 'other-frame)
+
+   ;; Use a single frame for ediff (without this you end up with an entire
+   ;; frame for the control buffer, this doesn't work well at all with tiling
+   ;; window managers).
+   (list 'ediff-window-setup-function 'ediff-setup-windows-plain)
+
+   ;; When using ido-switch-buffer: open buffers in the current frame
+   ;; rather than raising any existing frame (the default behaviour is
+   ;; to only do this with emacs windows but switch to existing
+   ;; frames).
+   (list 'ido-default-buffer-method 'selected-window)
+
+   ;; Don't auto popup a magit diff buffer when commiting, can still
+   ;; get it if needed with C-c C-d. The variable name for this
+   ;; changed in magit version 2.30 (~November 2015) so we are not
+   ;; compatible with older versions.
+   (list 'magit-commit-show-diff nil)
+
+   ;; Don't pop an errors buffer, it's really annoying, instead
+   ;; format a message in the minibuffer
+   (list 'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors))
+  "List of configuration variables set by frames-only-mode
+
+Each entry should be of the form `(list variable-symbol value)'.
+
+Variables which don't exist will be ignored.
+
+If you find any settings that you think will be useful to others using this
+mode please open an issue at https://github.com/davidshepherd7/frames-only-mode/issues
+to let me know."
+  :group 'frames-only-mode)
+
 
 
 ;;; Revertable-set helpers (from https://github.com/davidshepherd7/let-mode),
 ;;; possible TODO: publish that code to melpa and use it here.
 
-(defun frames-only-mode-revertable-set (&rest args)
+(defun frames-only-mode-revertable-set (var-vals)
   "As set but return a closure to revert the change."
   ;; Transform to list of (var value initial-value) and call helper function. I
   ;; wish we had a back-portable thread-last macro...
-  (let* ((var-vals (seq-partition args 2))
-         (existing-var-vals (seq-filter (lambda (s) (boundp (car s))) var-vals))
+  (let* ((existing-var-vals (seq-filter (lambda (s) (boundp (car s))) var-vals))
          (var-val-initials (seq-map (lambda (s) (append s (list (symbol-value (car s))))) existing-var-vals)))
     (frames-only-mode--revertable-set-helper var-val-initials)))
 
@@ -159,56 +215,10 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   :global t
   :keymap frames-only-mode-mode-map
 
+  ;; Apply most of the configuration changes
   (if frames-only-mode
-      (setq frames-only-mode--revert-fn
-            (frames-only-mode-revertable-set
-             ;; Make new frames instead of new windows, the main setting
-             'pop-up-frames 'graphic-only
-
-             ;; Focus follows mouse (for emacs windows) off to prevent crazy things
-             ;; happening when I click on e.g. compilation error links. Would do nothing
-             ;; interesting anyway if everything is working because there are no windows
-             ;; within frames.
-             'mouse-autoselect-window nil
-             'focus-follows-mouse nil
-
-             ;; kill frames when a buffer is buried, makes most things play nice with
-             ;; frames
-             'frame-auto-hide-function 'delete-frame
-
-             ;; TODO: figure out why this didn't seem to work
-             ;; gdb (gud) does things with windows by default, this stops some of it:
-             ;; 'gdb-use-separate-io-buffer nil
-             ;; 'gdb-many-windows nil
-
-             ;; org windows: Use frames not emacs windows
-             'org-agenda-window-setup 'other-frame
-             'org-src-window-setup 'other-frame
-
-             ;; Use a single frame for ediff (without this you end up with an entire
-             ;; frame for the control buffer, this doesn't work well at all with tiling
-             ;; window managers).
-             'ediff-window-setup-function 'ediff-setup-windows-plain
-
-             ;; When using ido-switch-buffer: open buffers in the current frame
-             ;; rather than raising any existing frame (the default behaviour is
-             ;; to only do this with emacs windows but switch to existing
-             ;; frames).
-             'ido-default-buffer-method 'selected-window
-
-             ;; Don't auto popup a magit diff buffer when commiting, can still
-             ;; get it if needed with C-c C-d. The variable name for this
-             ;; changed in magit version 2.30 (~November 2015) so we are not
-             ;; compatible with older versions.
-             'magit-commit-show-diff nil
-
-             ;; Don't pop an errors buffer, it's really annoying, instead
-             ;; format a message in the minibuffer
-             'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors
-             ))
-    ;; else
+      (setq frames-only-mode--revert-fn (frames-only-mode-revertable-set frames-only-mode-configuration-variables))
     (funcall frames-only-mode--revert-fn))
-
 
   ;; Disable in some functions as specified by customisation
   (if frames-only-mode
