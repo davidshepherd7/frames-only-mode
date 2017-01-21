@@ -23,24 +23,23 @@ running the espuds tests."
             (signal 'cl-assertion-failed `(,form ,@sargs))))))
 
 
+(defvar test-features
+  (list 'org-agenda 'ido 'magit-commit 'flycheck 'ediff-wind)
+  "Features used by frames-only-mode")
+
 (ert-deftest toggle-mode-without-other-features ()
 
-  (cl-assert (not (featurep 'frames-only-mode)))
+  (should-not (featurep 'frames-only-mode))
 
   ;; For these tests we need to make sure we don't have these things loaded initially
-  (cl-assert (not (featurep 'ido)))
-  (cl-assert (not (featurep 'magit)))
-  (cl-assert (not (featurep 'flycheck)))
-  (cl-assert (not (featurep 'gdb)))
+  (-each test-features (lambda (f) (should-not (featurep f))))
 
   (require 'frames-only-mode (f-expand "frames-only-mode.el" (f-parent (f-dirname (f-this-file)))))
   (frames-only-mode t)
+  (should frames-only-mode)
   (frames-only-mode 0)
 
   ;; And we still should not have loaded them
-  (cl-assert (not (featurep 'ido)))
-  (cl-assert (not (featurep 'magit)))
-  (cl-assert (not (featurep 'flycheck)))
-  (cl-assert (not (featurep 'gdb))))
+  (-each test-features (lambda (f) (should-not (featurep f)))))
 
 (ert-run-tests-batch-and-exit)
