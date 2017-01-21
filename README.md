@@ -26,9 +26,8 @@ In combination with `frames-only-mode` I recommend:
   of the default completion interface.
 
 
-You will probably also want a hotkey to open new emacs frames. Bind this shell
-command to automatically open a useful buffer in a new frame (usually your most
-recent unopened buffer):
+Bind this shell command to a hotkey to automatically open a useful buffer in
+a new frame (usually your most recently viewed buffer which isn't currently open):
 
     emacsclient -c -n -e '(switch-to-buffer nil)'
 
