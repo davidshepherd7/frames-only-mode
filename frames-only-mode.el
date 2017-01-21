@@ -13,7 +13,6 @@
 
 ;;; Code:
 
-(require 'subr-x)
 (require 'seq)
 
 
