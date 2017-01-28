@@ -1,6 +1,6 @@
 # Frames only mode
 
-[![travis](https://travis-ci.org/davidshepherd7/frames-only-mode.svg?branch=master)](https://travis-ci.org/davidshepherd7/frames-only-mode)
+[![travis](https://travis-ci.org/davidshepherd7/frames-only-mode.svg?branch=master)](https://travis-ci.org/davidshepherd7/frames-only-mode) [![MELPA](https://melpa.org/packages/frames-only-mode-badge.svg)](https://melpa.org/#/frames-only-mode)
 
 An emacs global minor mode to use emacs frames (i.e. operating system windows)
 instead of emacs' internal windowing system. This combines particularly well
