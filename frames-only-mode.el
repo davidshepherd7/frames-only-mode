@@ -4,7 +4,7 @@
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "24.4") (dash "2.13.0"))
+;; Package-Requires: ((emacs "24.4") (dash "2.13.0") (s "1.11.0"))
 ;; Keywords: frames, windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
@@ -14,6 +14,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 's)
 
 
 
@@ -97,6 +98,20 @@ Each entry should be of the form `(list variable-symbol value)'.
 If you find any settings that you think will be useful to others using this
 mode please open an issue at https://github.com/davidshepherd7/frames-only-mode/issues
 to let me know."
+  :group 'frames-only-mode)
+
+(defcustom frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
+  ;; TODO: enable by default when this has had a bit more testing
+  ;; (not (null (and (eq window-system 'x)
+  ;;                 (executable-find "wmctrl"))))
+  nil
+  "When a frame is visible on a hidden virtual desktop, open a new copy of the frame.
+
+This will only work under X11 and when you have the wmctrl binary
+available on your path (you can probably install wmctrl from your
+operating system's package manager).
+
+It's a bit of a hack, so there may be some issues."
   :group 'frames-only-mode)
 
 
@@ -198,6 +213,46 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 (defun frames-only-mode-flycheck-display-errors (errors)
   (message "%s" (mapcar 'flycheck-error-format-message-and-id errors)))
 
+
+
+
+;;; Interactions with wmctrl
+
+(defun frames-only-mode--call-process (process &rest args)
+  "Call a process with sensible error handling and output to a string"
+  (with-output-to-string
+    (let* ((exit-code (apply #'call-process process nil standard-output nil args)))
+      (when (not (equal exit-code 0))
+        (error "Process %s %s exited with error code %s" process args exit-code)))))
+
+(defun frames-only-mode--x-current-desktop ()
+  "Get the number of the X11 desktop which is visible"
+  (--> (frames-only-mode--call-process "wmctrl" "-d")
+       (s-split "\n" it)
+       (--map (split-string it "\\s-+") it)
+       (--first (equal (nth 1 it) "*") it)
+       (car it)))
+
+(defun frames-only-mode--x-visible-window-names ()
+  "Get a list of X11 windows which are on the visible desktop."
+  (let ((current-desktop (frames-only-mode--x-current-desktop)))
+    (--> (frames-only-mode--call-process "wmctrl" "-l")
+         (s-split "\n" it)
+         (--map (s-split-up-to "\\s-+" it 3) it)
+         (--filter (equal (nth 1 it) current-desktop) it)
+         (--map (nth 3 it) it))))
+
+(defun frames-only-mode--x-buffer-window-visible (buffer-name)
+  "Check buffer is currently displayed on a visible X11 virtual desktop."
+  (--some (equal it buffer-name)
+          (frames-only-mode--x-visible-window-names)))
+
+(defun frames-only-mode--display-buffer-fn (buffer property-alist)
+  "See `frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops'."
+  (when (and frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
+             (not (frames-only-mode--x-buffer-window-visible (buffer-name buffer))))
+    (display-buffer-pop-up-frame buffer property-alist)))
+
 
 
 (defvar frames-only-mode-mode-map
@@ -243,7 +298,16 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   ;; Make sure completions buffer is buried after we are done with the minibuffer
   (if frames-only-mode
       (add-hook 'minibuffer-exit-hook #'frames-only-mode-bury-completions)
-    (remove-hook 'minibuffer-exit-hook #'frames-only-mode-bury-completions)))
+    (remove-hook 'minibuffer-exit-hook #'frames-only-mode-bury-completions))
+
+  ;; Set up hacks to pop up new frames for buffers when they are displayed on a
+  ;; virtual desktop which is not currently visible (X11 only).
+  (if frames-only-mode
+      (add-to-list 'display-buffer-alist
+                   (cons "\*compilation\*" (cons #'frames-only-mode--display-buffer-fn nil)))
+    (setq display-buffer-alist
+          (--remove (equal (car (cdr it)) #'frames-only-mode--display-buffer-fn)
+                    display-buffer-alist))))
 
 
 
