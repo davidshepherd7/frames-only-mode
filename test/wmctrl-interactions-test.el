@@ -58,8 +58,7 @@
 
 
 (defun fom/display-buffer-alist-contains-settings ()
-  (--find (equal (car (cdr it))
-                 #'frames-only-mode--display-buffer-fn)
+  (--find (equal (car it) #'frames-only-mode--should-force-new-frame)
           display-buffer-alist))
 
 (ert-deftest settings-reverted-for-compilation-window-display ()

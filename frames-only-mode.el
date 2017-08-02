@@ -255,11 +255,10 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   (--some (equal it buffer-name)
           (frames-only-mode--x-visible-window-names)))
 
-(defun frames-only-mode--display-buffer-fn (buffer property-alist)
+(defun frames-only-mode--should-force-new-frame (buffer-name _)
   "See `frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops'."
-  (when (and frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
-             (not (frames-only-mode--x-buffer-window-visible (buffer-name buffer))))
-    (display-buffer-pop-up-frame buffer property-alist)))
+  (and frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
+       (not (frames-only-mode--x-buffer-window-visible buffer-name))))
 
 
 
@@ -312,9 +311,9 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
   ;; virtual desktop which is not currently visible (X11 only).
   (if frames-only-mode
       (add-to-list 'display-buffer-alist
-                   (cons "\*compilation\*" (cons #'frames-only-mode--display-buffer-fn nil)))
+                   (cons #'frames-only-mode--should-force-new-frame (cons #'display-buffer-pop-up-frame nil)))
     (setq display-buffer-alist
-          (--remove (equal (car (cdr it)) #'frames-only-mode--display-buffer-fn)
+          (--remove (equal (car it) #'frames-only-mode--should-force-new-frame)
                     display-buffer-alist))))
 
 
