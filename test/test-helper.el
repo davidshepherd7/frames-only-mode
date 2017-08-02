@@ -8,6 +8,8 @@
 
 (require 'el-mock)
 
+(require 'validate)
+
 (defmacro with-frames-only-mode (&rest body)
   `(unwind-protect
        (progn

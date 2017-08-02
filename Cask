@@ -15,9 +15,7 @@
  (depends-on "f")
  (depends-on "ecukes")
  (depends-on "espuds")
-
- ;; dash is still just nicer than seq sometimes so I might use it in tests.
- (depends-on "dash")
+ (depends-on "validate")
 
  ;; For testing interactions
  (depends-on "magit")

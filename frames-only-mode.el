@@ -27,6 +27,7 @@
 (defcustom frames-only-mode-kill-frame-when-buffer-killed-buffer-list
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
   "Buffer names for which the containing frame should be killed when the buffer is killed."
+  :type '(repeat string)
   :group 'frames-only-mode)
 
 
@@ -41,6 +42,7 @@ Completion windows are always split horizontally (helm style).
 To disable completion popups entirely use the variable
 `completion-auto-help' for default Emacs completion or
 `ido-completion-buffer' for ido-based completion."
+  :type 'boolean
   :group 'frames-only-mode)
 
 (defcustom frames-only-mode-use-window-functions
@@ -48,6 +50,10 @@ To disable completion popups entirely use the variable
   "List of functions inside which new emacs windows should be created instead of frames.
 
 \(i.e. pop-up-frames is let bound to nil, the default value)."
+  ;; Type is symbol, not function, because we sometimes want to add functions to
+  ;; this list without requiring the library.
+  :type '(repeat symbol)
+
   :group 'frames-only-mode)
 
 
@@ -98,6 +104,7 @@ Each entry should be of the form `(list variable-symbol value)'.
 If you find any settings that you think will be useful to others using this
 mode please open an issue at https://github.com/davidshepherd7/frames-only-mode/issues
 to let me know."
+  :type '(repeat (list symbol sexp))
   :group 'frames-only-mode)
 
 (defcustom frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
@@ -112,6 +119,7 @@ available on your path (you can probably install wmctrl from your
 operating system's package manager).
 
 It's a bit of a hack, so there may be some issues."
+  :type 'boolean
   :group 'frames-only-mode)
 
 
