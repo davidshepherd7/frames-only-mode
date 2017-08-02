@@ -4,7 +4,7 @@
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "24.4") (seq "2.3"))
+;; Package-Requires: ((emacs "24.4") (dash "2.13.0"))
 ;; Keywords: frames, windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
@@ -13,7 +13,7 @@
 
 ;;; Code:
 
-(require 'seq)
+(require 'dash)
 
 
 
@@ -108,11 +108,11 @@ In accordance with https://www.gnu.org/software/emacs/manual/html_node/elisp/Hoo
 we even set variables that are not currently bound, but we unbind them again on revert."
   ;; Transform to list of (var value initial-value) and call helper function. I
   ;; wish we had a back-portable thread-last macro...
-  (let ((var-val-initials (seq-map (lambda (s) (append s
-                                                  (list (when (boundp (car s))
-                                                          (symbol-value (car s)))
-                                                        (boundp (car s)))))
-                                   var-vals)))
+  (let ((var-val-initials (-map (lambda (s) (append s
+                                               (list (when (boundp (car s))
+                                                       (symbol-value (car s)))
+                                                     (boundp (car s)))))
+                                var-vals)))
     (frames-only-mode--revertable-set-helper var-val-initials)))
 
 (defun frames-only-mode--revertable-set-helper (var-value-initials)
@@ -127,13 +127,13 @@ we even set variables that are not currently bound, but we unbind them again on 
                (makunbound (car s)))))))
 
     ;; Set each var
-    (seq-map (lambda (s) (set (car s) (cadr s))) var-value-initials)
+    (-map (lambda (s) (set (car s) (cadr s))) var-value-initials)
 
     ;; Return a function to revert the changes
     (lambda ()
       "Revert the variable values set by revertable-set"
       (when (not revert-done)
-        (seq-map revert-var-fn var-value-initials)
+        (-map revert-var-fn var-value-initials)
         (setq revert-done t)))))
 
 (defvar frames-only-mode--revert-fn #'ignore
