@@ -257,8 +257,15 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 
 (defun frames-only-mode--should-force-new-frame (buffer-name _)
   "See `frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops'."
-  (and frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
-       (not (frames-only-mode--x-buffer-window-visible buffer-name))))
+  (condition-case err
+      (and frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
+           (not (frames-only-mode--x-buffer-window-visible buffer-name)))
+    (error
+     (progn
+       (message "frames-only-mode failed to get a list of visible buffers from X11 with the error: '%s'
+You may want to try installing `wmctrl', or disable this feature by setting `frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops' to nil"
+                err)
+       nil))))
 
 
 

@@ -68,3 +68,11 @@
    (should (fom/display-buffer-alist-contains-settings)))
 
   (should (not (fom/display-buffer-alist-contains-settings))))
+
+
+(ert-deftest error-running-wmctrl ()
+  (cl-letf ((frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops t)
+            ((symbol-function 'frames-only-mode--x-buffer-window-visible)
+             (lambda (_) (error "foo"))))
+
+    (should-not (frames-only-mode--should-force-new-frame "buff" nil))))
