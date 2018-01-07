@@ -305,9 +305,11 @@ You may want to try installing `wmctrl', or disable this feature by setting `fra
   (if frames-only-mode
       (progn
         (advice-add #'minibuffer-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
-        (advice-add 'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion))
+        (advice-add 'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
+        (advice-add 'pcomplete :around #'frames-only-mode-advice-use-windows-for-completion))
     (advice-remove #'minibuffer-completion-help #'frames-only-mode-advice-use-windows-for-completion)
-    (advice-remove 'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion))
+    (advice-remove 'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion)
+    (advice-remove 'pcomplete #'frames-only-mode-advice-use-windows-for-completion))
 
   ;; Make sure completions buffer is buried after we are done with the minibuffer
   (if frames-only-mode
