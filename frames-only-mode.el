@@ -20,7 +20,7 @@
 
 ;;; Options:
 
-(defgroup frames-only-mode '()
+(defgroup frames-only '()
   "Use frames instead of emacs windows."
   :group 'frames)
 
@@ -28,7 +28,7 @@
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
   "Buffer names for which the containing frame should be killed when the buffer is killed."
   :type '(repeat string)
-  :group 'frames-only-mode)
+  :group 'frames-only)
 
 
 (defcustom frames-only-mode-use-windows-for-completion t
@@ -43,7 +43,7 @@ To disable completion popups entirely use the variable
 `completion-auto-help' for default Emacs completion or
 `ido-completion-buffer' for ido-based completion."
   :type 'boolean
-  :group 'frames-only-mode)
+  :group 'frames-only)
 
 (defcustom frames-only-mode-use-window-functions
   (list #'calendar #'report-emacs-bug 'checkdoc-show-diagnostics 'checkdoc)
@@ -54,7 +54,7 @@ To disable completion popups entirely use the variable
   ;; this list without requiring the library.
   :type '(repeat symbol)
 
-  :group 'frames-only-mode)
+  :group 'frames-only)
 
 
 (defcustom frames-only-mode-configuration-variables
@@ -105,7 +105,7 @@ If you find any settings that you think will be useful to others using this
 mode please open an issue at https://github.com/davidshepherd7/frames-only-mode/issues
 to let me know."
   :type '(repeat (list symbol sexp))
-  :group 'frames-only-mode)
+  :group 'frames-only)
 
 (defcustom frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops
   ;; TODO: enable by default when this has had a bit more testing
@@ -120,7 +120,7 @@ operating system's package manager).
 
 It's a bit of a hack, so there may be some issues."
   :type 'boolean
-  :group 'frames-only-mode)
+  :group 'frames-only)
 
 
 
@@ -279,6 +279,7 @@ You may want to try installing `wmctrl', or disable this feature by setting `fra
 (define-minor-mode frames-only-mode
   "Use frames instead of emacs windows."
   :global t
+  :group 'frames-only
   :keymap frames-only-mode-mode-map
 
   ;; Apply most of the configuration changes
