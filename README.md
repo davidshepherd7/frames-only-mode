@@ -32,6 +32,17 @@ a new frame (usually your most recently viewed buffer which isn't currently open
     emacsclient -c -n -e '(switch-to-buffer nil)'
 
 
+## Changelog
+
+### Unstable
+
+* Add support for eshell completion
+* Add some support for reopening frames on hidden virtual desktops (currently
+  buggy and hidden behind a customize variable).
+* Fix some customize group weirdness
+
+
+
 ## Advanced Configuration
 
 ### Integration with virtual desktops under X11
