@@ -13,9 +13,6 @@ There's a fairly rough screencast showing the kind of things you can do with thi
 
 ## Typical Setup
 
-Install by dropping `frames-only-mode.el` into your load path, requiring it, and
-running `(frames-only-mode)` to enable the (global) minor mode.
-
 In combination with `frames-only-mode` I recommend:
 
 * Running emacs as [server-client](http://wikemacs.org/wiki/Emacs_server).
