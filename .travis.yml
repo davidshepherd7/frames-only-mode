@@ -3,6 +3,8 @@ language: emacs-lisp
 script:
   - evm install $EVM_EMACS --use --skip
   - emacs --version
+  # For some reason ert-runner can't be installed by the first run of cask install, but running twice works...
+  - cask install || true
   - cask install
   - make test
 
