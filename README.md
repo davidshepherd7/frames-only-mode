@@ -34,32 +34,11 @@ a new frame (usually your most recently viewed buffer which isn't currently open
 ### Unstable
 
 * Add support for eshell completion
-* Add some support for reopening frames on hidden virtual desktops (currently
-  buggy and hidden behind a customize variable).
 * Fix some customize group weirdness
 
 
 
 ## Advanced Configuration
-
-### Integration with virtual desktops under X11
-
-By default when a frame is open on a hidden virtual desktop emacs will not
-reopen the frame. `frames-only-mode` can try to detect when this is the case and
-open a new frame anyway.
-
-To enable this you need to install `wmctrl` (`sudo apt-get install wmctrl` on
-Ubuntu) and set
-`frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops` to `t`. (In the
-future this may be enabled by default when running under X11 with `wmctrl`
-installed, but it needs more testing first.)
-
-If you use this feature with a window manager other than XMonad please let me
-know if it works
-[here](https://github.com/davidshepherd7/frames-only-mode/issues/2).
-
-This feature is only applicable to X11 (I'm not sure what happens on Wayland/OSX/Windows).
-
 
 ### Integrating with command line git
 

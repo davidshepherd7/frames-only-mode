@@ -84,5 +84,4 @@ Expr should be false, true, false respectively."
   (validate-variable 'frames-only-mode-use-windows-for-completion)
   (validate-variable 'frames-only-mode-use-window-functions)
   (validate-variable 'frames-only-mode-configuration-variables)
-  (validate-variable 'frames-only-mode-reopen-frames-from-hidden-x11-virtual-desktops)
   )
