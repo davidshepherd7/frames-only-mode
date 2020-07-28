@@ -94,6 +94,11 @@ To disable completion popups entirely use the variable
    ;; compatible with older versions.
    (list 'magit-commit-show-diff nil)
 
+   ;; We've configured magit to always open a new frame, so we need to delete
+   ;; the frame on quitting otherwise each use of magit-status leaves an
+   ;; additional frame lying around.
+   (list 'magit-bury-buffer-function #'delete-frame)
+
    ;; Don't pop an errors buffer, it's really annoying, instead
    ;; format a message in the minibuffer
    (list 'flycheck-display-errors-function #'frames-only-mode-flycheck-display-errors))
