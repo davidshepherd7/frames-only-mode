@@ -1,0 +1,50 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        emacs_version:
+          - 24.5
+          - 25.3
+          - 26.3
+          - 27.1
+
+    steps:
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - uses: purcell/setup-emacs@master
+        with:
+          version: ${{ matrix.emacs_version }}
+          
+      - name: Install Cask
+        run: curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
+        
+      - name: Install dependencies
+        run: PATH="/home/runner/.cask/bin:$PATH" make install
+        
+      - name: Build
+        run: PATH="/home/runner/.cask/bin:$PATH" make build
+        
+      - name: Test
+        run: PATH="/home/runner/.cask/bin:$PATH" make test
