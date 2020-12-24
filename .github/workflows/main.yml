@@ -26,7 +26,8 @@ jobs:
           - 25.3
           - 26.3
           - 27.1
-
+      fail-fast: false
+      
     steps:
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
