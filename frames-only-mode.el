@@ -97,7 +97,7 @@ To disable completion popups entirely use the variable
    ;; We've configured magit to always open a new frame, so we need to delete
    ;; the frame on quitting otherwise each use of magit-status leaves an
    ;; additional frame lying around.
-   (list 'magit-bury-buffer-function #'delete-frame)
+   (list 'magit-bury-buffer-function #'frames-only-mode-magit-bury-buffer-function)
 
    ;; Don't pop an errors buffer, it's really annoying, instead
    ;; format a message in the minibuffer
@@ -211,6 +211,16 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 (defun frames-only-mode-flycheck-display-errors (errors)
   (message "%s" (mapcar 'flycheck-error-format-message-and-id errors)))
 
+(defun frames-only-mode-magit-bury-buffer-function (kill-buffer)
+  "By default magit leaves open frames after quitting magit-status buffers in some cases.
+
+This modification makes it always kill the frame after quitting a magit status buffer."
+  (let ((current-buffer-is-magit-status (derived-mode-p 'magit-status-mode))
+        (current-frame (selected-frame)))
+    (magit-restore-window-configuration kill-buffer)
+    (when (and current-buffer-is-magit-status
+               (equal (selected-frame) current-frame))
+      (delete-frame))))
 
 
 
