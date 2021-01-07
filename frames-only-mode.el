@@ -211,6 +211,9 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 (defun frames-only-mode-flycheck-display-errors (errors)
   (message "%s" (mapcar 'flycheck-error-format-message-and-id errors)))
 
+;; Quiet the compiler: will always be loaded by the time this function is used.
+(declare-function magit-restore-window-configuration "magit-mode")
+
 (defun frames-only-mode-magit-bury-buffer-function (kill-buffer)
   "By default magit leaves open frames after quitting magit-status buffers in some cases.
 
