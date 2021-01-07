@@ -36,6 +36,7 @@ a new frame (usually your most recently viewed buffer which isn't currently open
 
 * Add support for eshell completion
 * Fix some customize group weirdness
+* Fix sometimes leaving additional frames open after quitting magit
 
 
 
