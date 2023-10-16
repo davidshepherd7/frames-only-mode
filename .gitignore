@@ -1,2 +1,4 @@
 .cask
 flycheck_frames-only-mode.el
+*.elc
+*autoloads.el
