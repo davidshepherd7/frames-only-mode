@@ -225,6 +225,20 @@ This modification makes it always kill the frame after quitting a magit status b
                (equal (selected-frame) current-frame))
       (delete-frame))))
 
+(declare-function po-subedit-abort "po-mode")
+(declare-function po-subedit-exit "po-mode")
+
+(defun frames-only-mode-po-subedit-exit-delete-frame ()
+  "Delete frame after exiting when finishing `(po-subedit)'."
+  (delete-frame))
+
+(defun frames-only-mode-po-subedit-abort-delete-frame ()
+  "Delete frame  when aborting in `(po-subedit)'."
+  ;; Only delete-frame when (po-subedit-abort) is called by the user.
+  ;; `(po-subedit-exit)' also calls the same function, but that
+  ;; would be to early to delete the frame.
+  (when (equal this-command #'po-subedit-abort)
+    (delete-frame)))
 
 
 (defvar frames-only-mode-mode-map
@@ -255,9 +269,13 @@ This modification makes it always kill the frame after quitting a magit status b
   (if frames-only-mode
       (progn
         (add-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
-        (advice-add #'bury-buffer :around #'frames-only-mode-advice-delete-frame-on-bury))
+        (advice-add #'bury-buffer :around #'frames-only-mode-advice-delete-frame-on-bury)
+        (advice-add #'po-subedit-exit :after #'frames-only-mode-po-subedit-exit-delete-frame)
+        (advice-add #'po-subedit-abort :after #'frames-only-mode-po-subedit-abort-delete-frame))
     (remove-hook 'kill-buffer-hook #'frames-only-mode-kill-frame-if-current-buffer-matches)
-    (advice-remove #'bury-buffer #'frames-only-mode-advice-delete-frame-on-bury))
+    (advice-remove #'bury-buffer #'frames-only-mode-advice-delete-frame-on-bury)
+    (advice-remove #'po-subedit-exit #'frames-only-mode-po-subedit-exit-delete-frame)
+    (advice-remove #'po-subedit-abort #'frames-only-mode-po-subedit-abort-delete-frame))
 
   ;; Advise completion popup functions to use windows instead of frames if
   ;; the custom setting is true.
@@ -265,10 +283,10 @@ This modification makes it always kill the frame after quitting a magit status b
       (progn
         (advice-add #'minibuffer-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
         (advice-add 'ido-completion-help :around #'frames-only-mode-advice-use-windows-for-completion)
-        (advice-add 'pcomplete :around #'frames-only-mode-advice-use-windows-for-completion))
+        (advice-add 'pcomplete :around #'frames-only-mode-advice-use-windows-for-completion)
     (advice-remove #'minibuffer-completion-help #'frames-only-mode-advice-use-windows-for-completion)
     (advice-remove 'ido-completion-help #'frames-only-mode-advice-use-windows-for-completion)
-    (advice-remove 'pcomplete #'frames-only-mode-advice-use-windows-for-completion))
+    (advice-remove 'pcomplete #'frames-only-mode-advice-use-windows-for-completion)))
 
   ;; Make sure completions buffer is buried after we are done with the minibuffer
   (if frames-only-mode
