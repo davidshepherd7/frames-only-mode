@@ -7,20 +7,6 @@
 ;; Don't accidentally load old .elc files
 (setq load-prefer-newer t)
 
-;; This fixes an issue in emacs 25.1 where the debugger would be invoked
-;; incorrectly, breaking ert.
-(when (and (= emacs-major-version 25) (< emacs-minor-version 2))
-  (require 'cl-preloaded)
-  (setf (symbol-function 'cl--assertion-failed)
-        (lambda (form &optional string sargs args)
-          "This function has been modified by espuds to remove an incorrect manual call
-to the debugger in emacs 25.1. The modified version should only be used for
-running the espuds tests."
-          (if string
-              (apply #'error string (append sargs args))
-            (signal 'cl-assertion-failed `(,form ,@sargs))))))
-
-
 (defvar test-features
   (list 'org-agenda 'ido 'magit-commit 'flycheck 'ediff-wind)
   "Features used by frames-only-mode")
