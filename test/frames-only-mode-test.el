@@ -8,6 +8,14 @@
 (require 'frames-only-mode)
 (require 'validate)
 
+(defmacro with-frames-only-mode (&rest body)
+  `(unwind-protect
+       (progn
+         (frames-only-mode 1)
+         ,@body)
+     (frames-only-mode 0)))
+
+
 (defmacro fom-rollback-test (expr)
   "Check expr before, during and after toggling frames-only-mode.
 

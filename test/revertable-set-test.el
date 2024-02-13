@@ -1,4 +1,6 @@
 
+(require 'frames-only-mode)
+
 (ert-deftest revertable-set-set-outside ()
   ""
   (let ((lm/foo 1)

@@ -10,9 +10,7 @@
 (source gnu)
 
 (development
- (depends-on "ert-runner")
- (depends-on "el-mock")
- (depends-on "f")
+ ;; For testing custom types
  (depends-on "validate")
 
  ;; For testing interactions
