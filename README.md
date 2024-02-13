@@ -30,17 +30,6 @@ a new frame (usually your most recently viewed buffer which isn't currently open
     emacsclient -c -n -e '(switch-to-buffer nil)'
 
 
-## Changelog
-
-### Unstable
-
-* Add support for eshell completion
-* Fix some customize group weirdness
-* Fix sometimes leaving additional frames open after quitting magit
-* Regexp support in kill-frame-when-buffer-killed-buffer-list
-
-
-
 ## Advanced Configuration
 
 ### Integrating with command line git
@@ -91,6 +80,17 @@ whether the `*Completions*` buffer is displayed in a frame or an emacs window.
 The default is to use an emacs window, which works well with any window manager.
 Alternatively the `*Completions*` buffer can be disabled entirely by setting
 `completion-auto-help` to `nil`.
+
+
+## Changelog
+
+### Unstable
+
+* Add support for eshell completion
+* Fix some customize group weirdness
+* Fix sometimes leaving additional frames open after quitting magit
+* Regexp support in kill-frame-when-buffer-killed-buffer-list
+
 
 
 ## Other links
