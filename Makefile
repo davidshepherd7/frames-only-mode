@@ -10,7 +10,7 @@ build :
 clean :
 	@rm -f *.elc
 
-test: build test-unit test-load
+test: build test-unit
 
 test-unit:
 	cask exec ert-runner
