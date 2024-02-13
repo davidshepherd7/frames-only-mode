@@ -4,8 +4,6 @@
 
 (require 'ert)
 
-(require 'f)
-
 ;; Don't accidentally load old .elc files
 (setq load-prefer-newer t)
 
@@ -32,9 +30,10 @@ running the espuds tests."
   (should-not (featurep 'frames-only-mode))
 
   ;; For these tests we need to make sure we don't have these things loaded initially
-  (-each test-features (lambda (f) (should-not (featurep f))))
+  (dolist (elt test-features)
+    (should-not (featurep elt)))
 
-  (require 'frames-only-mode (f-expand "frames-only-mode.el" (f-parent (f-dirname (f-this-file)))))
+  (require 'frames-only-mode (concat default-directory "frames-only-mode.el"))
   (frames-only-mode t)
   (should frames-only-mode)
   ;; Appropriate vars should have been set anyway
@@ -42,6 +41,7 @@ running the espuds tests."
   (frames-only-mode 0)
 
   ;; And we still should not have loaded them
-  (-each test-features (lambda (f) (should-not (featurep f)))))
+  (dolist (elt test-features)
+    (should-not (featurep elt))))
 
 (ert-run-tests-batch-and-exit)

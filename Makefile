@@ -16,7 +16,7 @@ test-unit:
 	cask exec ert-runner
 
 test-load:
-	cask ${EMACS} -Q --script "load-test/loading-test.el"
+	cask ${EMACS} -Q --chdir . --script "load-test/loading-test.el"
 
 install:
 	${CASK} install
