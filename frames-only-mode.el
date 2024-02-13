@@ -26,7 +26,8 @@
 
 (defcustom frames-only-mode-kill-frame-when-buffer-killed-buffer-list
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
-  "Buffer names for which the containing frame should be killed when the buffer is killed."
+  "Buffers for which the containing frame should be killed when the
+buffer is killed."
   :type '(repeat string)
   :group 'frames-only)
 
@@ -47,7 +48,8 @@ To disable completion popups entirely use the variable
 
 (defcustom frames-only-mode-use-window-functions
   (list #'calendar #'report-emacs-bug 'checkdoc-show-diagnostics 'checkdoc 'org-compile-file)
-  "List of functions inside which new emacs windows should be created instead of frames.
+  "List of functions inside which new emacs windows should be
+created instead of frames.
 
 \(i.e. pop-up-frames is let bound to nil, the default value)."
   ;; Type is symbol, not function, because we sometimes want to add functions to
@@ -117,8 +119,10 @@ to let me know."
 (defun frames-only-mode-revertable-set (var-vals)
   "Like set but return a closure to revert the change.
 
-In accordance with https://www.gnu.org/software/emacs/manual/html_node/elisp/Hooks-for-Loading.html
-we even set variables that are not currently bound, but we unbind them again on revert."
+In accordance with
+https://www.gnu.org/software/emacs/manual/html_node/elisp/Hooks-for-Loading.html
+we even set variables that are not currently bound, but we unbind
+them again on revert."
   ;; Transform to list of (var value initial-value) and call helper function. I
   ;; wish we had a back-portable thread-last macro...
   (let ((var-val-initials (-map (lambda (s) (append s
@@ -195,7 +199,8 @@ packages spamming frames."
 (defun frames-only-mode-advice-delete-frame-on-bury (orig-fun &rest args)
   "Delete the frame when burying certain buffers.
 
-Only if there are no other windows in the frame, and if the buffer is in frames-only-mode-kill-frame-when-buffer-killed-buffer-list."
+Only if there are no other windows in the frame, and if the
+buffer is in frames-only-mode-kill-frame-when-buffer-killed-buffer-list."
   ;; Store the buffer name now because we can't get it after burying the buffer
   (let ((buffer-to-bury (buffer-name)))
     (apply orig-fun args)
@@ -215,9 +220,11 @@ Only if there are no other windows in the frame, and if the buffer is in frames-
 (declare-function magit-restore-window-configuration "magit-mode")
 
 (defun frames-only-mode-magit-bury-buffer-function (kill-buffer)
-  "By default magit leaves open frames after quitting magit-status buffers in some cases.
+  "By default magit leaves open frames after quitting magit-status
+buffers in some cases.
 
-This modification makes it always kill the frame after quitting a magit status buffer."
+This modification makes it always kill the frame after quitting a
+magit status buffer."
   (let ((current-buffer-is-magit-status (derived-mode-p 'magit-status-mode))
         (current-frame (selected-frame)))
     (magit-restore-window-configuration kill-buffer)
