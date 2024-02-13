@@ -6,6 +6,7 @@
 ;; changes correctly (since this is what they are testing!).
 
 (require 'frames-only-mode)
+(require 'validate)
 
 (defmacro fom-rollback-test (expr)
   "Check expr before, during and after toggling frames-only-mode.
@@ -85,3 +86,24 @@ Expr should be false, true, false respectively."
   (validate-variable 'frames-only-mode-use-window-functions)
   (validate-variable 'frames-only-mode-configuration-variables)
   )
+
+(ert-deftest test-validate-setq-kill-frame-for-buffer ()
+  (validate-setq frames-only-mode-kill-frame-when-buffer-killed-buffer-list
+                 '("foo" (regexp . "foo.*"))))
+
+(ert-deftest test-should-kill-frame-for-buffer-empty ()
+  (let ((frames-only-mode-kill-frame-when-buffer-killed-buffer-list '()))
+    (should-not (frames-only-should-kill-frame-for-buffer "foo"))))
+
+(ert-deftest test-should-kill-frame-for-buffer-static-strings ()
+  (let ((frames-only-mode-kill-frame-when-buffer-killed-buffer-list '("foo" "baz")))
+    (should (frames-only-should-kill-frame-for-buffer "foo"))
+    (should-not (frames-only-should-kill-frame-for-buffer "foolish"))
+    (should (frames-only-should-kill-frame-for-buffer "baz"))
+    (should-not (frames-only-should-kill-frame-for-buffer "bar"))))
+
+(ert-deftest test-should-kill-frame-for-buffer-regexp ()
+  (let ((frames-only-mode-kill-frame-when-buffer-killed-buffer-list '((regexp . "foo.*"))))
+    (should (frames-only-should-kill-frame-for-buffer "foo"))
+    (should (frames-only-should-kill-frame-for-buffer "foolish"))
+    (should-not (frames-only-should-kill-frame-for-buffer "bar"))))

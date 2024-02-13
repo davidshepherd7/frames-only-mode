@@ -27,8 +27,15 @@
 (defcustom frames-only-mode-kill-frame-when-buffer-killed-buffer-list
   '("*RefTeX Select*" "*Help*" "*Popup Help*" "*Completions*")
   "Buffers for which the containing frame should be killed when the
-buffer is killed."
-  :type '(repeat string)
+buffer is killed.
+
+Each entry in the list is either a string representing a buffer
+name or a pair like `(regexp . \"\\\\*foo.*\\\\.bz\\\\*\")' representing a regexp
+which matches buffer names.
+"
+  :type '(repeat (choice
+                  string
+                  (cons (const regexp) string)))
   :group 'frames-only)
 
 
@@ -179,13 +186,22 @@ This is useful for closing temporary windows created by some commands."
   (abort-recursive-edit))
 
 
+(defun frames-only-should-kill-frame-for-buffer (b-name)
+  (--any?
+   (cond
+    ((stringp it) (equal b-name it))
+    ((and (consp it) (eq (car it) 'regexp)) (s-matches-p (cdr it) b-name))
+    (t nil))
+   frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
+
+
 (defun frames-only-mode-kill-frame-if-current-buffer-matches ()
   "Kill frames as well when certain buffers are closed.
 
 Only if there is only a single window in the frame, helps stop some
 packages spamming frames."
   (when (and (one-window-p)
-             (member (buffer-name) frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
+             (frames-only-should-kill-frame-for-buffer (buffer-name)))
     (delete-frame)))
 
 
@@ -205,8 +221,7 @@ buffer is in frames-only-mode-kill-frame-when-buffer-killed-buffer-list."
   (let ((buffer-to-bury (buffer-name)))
     (apply orig-fun args)
     (when (and (one-window-p)
-               (member buffer-to-bury
-                       frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
+               (frames-only-should-kill-frame-for-buffer buffer-to-bury))
       (delete-frame))))
 
 (defun frames-only-mode-bury-completions ()
