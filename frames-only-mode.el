@@ -54,7 +54,7 @@ To disable completion popups entirely use the variable
   :group 'frames-only)
 
 (defcustom frames-only-mode-use-window-functions
-  (list #'calendar #'report-emacs-bug 'checkdoc-show-diagnostics 'checkdoc 'org-compile-file)
+  (list #'calendar #'report-emacs-bug 'checkdoc-show-diagnostics 'checkdoc 'org-compile-file 'corfu-popupinfo--show)
   "List of functions inside which new emacs windows should be
 created instead of frames.
 
