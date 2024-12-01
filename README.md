@@ -17,11 +17,8 @@ There's a fairly rough screencast showing the kind of things you can do with thi
 In combination with `frames-only-mode` I recommend:
 
 * Running emacs as [server-client](http://wikemacs.org/wiki/Emacs_server).
-* Binding a hotkey to open new emacs frames (see below).
-* Using [helm](https://github.com/emacs-helm/helm),
-  [ivy](https://github.com/abo-abo/swiper) or
-  [ido](https://www.masteringemacs.org/article/introduction-to-ido-mode) instead
-  of the default completion interface.
+* Binding a window manager hotkey to open new emacs frames (see below).
+* Rebinding any window splitting keys that you use to call `make-frame` instead.
 
 
 Bind this shell command to a hotkey to automatically open a useful buffer in
