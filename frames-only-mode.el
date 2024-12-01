@@ -252,8 +252,27 @@ magit status buffer."
 (defvar frames-only-mode-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-]") #'frames-only-mode-abort-recursive-edit)
+    ;; Additional keys rebinding common window commands are added/removed by TODO
     map)
   "Keymap for ‘frames-only-mode’.")
+
+;;;###autoload
+(defun frames-only-mode-remap-common-window-split-keybindings ()
+  "Make frames-only-mode remap common window splitting keybinds.
+
+Only modifies `frames-only-mode-mode-map', no effect when the mode is
+disabled.
+
+If you have much customisation of your keybinds then you should
+probably do this manually instead.
+"
+  (interactive)
+  (define-key frames-only-mode-mode-map [remap split-window-below] #'make-frame-command)
+  (define-key frames-only-mode-mode-map [remap split-window-right] #'make-frame-command)
+  ;; C-x 4 is other-window functions, C-x 5 is other frame. remap doesn't work
+  ;; for this case.
+  (define-key frames-only-mode-mode-map (kbd "C-x 4") #'ctl-x-5-prefix)
+  )
 
 ;;;###autoload
 (define-minor-mode frames-only-mode

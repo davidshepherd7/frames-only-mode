@@ -115,3 +115,18 @@ Expr should be false, true, false respectively."
     (should (frames-only-should-kill-frame-for-buffer "foo"))
     (should (frames-only-should-kill-frame-for-buffer "foolish"))
     (should-not (frames-only-should-kill-frame-for-buffer "bar"))))
+
+
+(ert-deftest test-window-keybinding-overrides ()
+  ;; By default we don't do any rebinding
+  (with-frames-only-mode
+   (should (equal (key-binding (kbd "C-x 2")) #'split-window-below))
+   (should (equal (key-binding (kbd "C-x 4 b")) #'switch-to-buffer-other-window))
+   )
+
+  (frames-only-mode-remap-common-window-split-keybindings)
+  (with-frames-only-mode
+   (should (equal (key-binding (kbd "C-x 2")) #'make-frame-command))
+   (should (equal (key-binding (kbd "C-x 4 b")) #'switch-to-buffer-other-frame))
+   )
+  )
