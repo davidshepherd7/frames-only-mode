@@ -14,11 +14,14 @@ There's a fairly rough screencast showing the kind of things you can do with thi
 
 ## Typical Setup
 
+By default `frames-only-mode` doesn't modify any keybindings. To replace common
+window-using keybindings with their frame equivalents add
+`(frames-only-mode-remap-common-window-)` to your config.
+
 In combination with `frames-only-mode` I recommend:
 
 * Running emacs as [server-client](http://wikemacs.org/wiki/Emacs_server).
 * Binding a window manager hotkey to open new emacs frames (see below).
-* Rebinding any window splitting keys that you use to call `make-frame` instead.
 
 
 Bind this shell command to a hotkey to automatically open a useful buffer in
@@ -87,11 +90,12 @@ Alternatively the `*Completions*` buffer can be disabled entirely by setting
 * Fix some customize group weirdness
 * Fix sometimes leaving additional frames open after quitting magit
 * Regexp support in kill-frame-when-buffer-killed-buffer-list
+* Add frames-only-mode-remap-common-window-split-keybindings
 
 
 
 ## Other links
 
 This mode originated in
-[a blog post](http://techtrickery.com/tearing-out-the-emacs-window-manager.html)
+[a blog post](http://techtrickery.net/tearing-out-the-emacs-window-manager.html)
 which has some additional details.
