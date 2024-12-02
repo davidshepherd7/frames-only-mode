@@ -16,7 +16,7 @@ There's a fairly rough screencast showing the kind of things you can do with thi
 
 By default `frames-only-mode` doesn't modify any keybindings. To replace common
 window-using keybindings with their frame equivalents add
-`(frames-only-mode-remap-common-window-)` to your config.
+`(frames-only-mode-remap-common-window-split-keybindings)` to your config.
 
 In combination with `frames-only-mode` I recommend:
 
