@@ -10,9 +10,9 @@ build :
 clean :
 	@rm -f *.elc
 
-test: build test-unit
+test: test-unit
 
-test-unit:
+test-unit: build
 	cask ${EMACS} --batch -L . -L test -l frames-only-mode-test.el -l revertable-set-test.el -f ert-run-tests-batch-and-exit
 
 test-load:
