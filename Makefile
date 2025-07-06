@@ -19,6 +19,6 @@ test-load:
 	cask ${EMACS} -Q --chdir . --script "load-test/loading-test.el"
 
 install:
-	${CASK} install
+	${CASK} install --verbose
 
 .PHONY:	all test test-unit install clean build
