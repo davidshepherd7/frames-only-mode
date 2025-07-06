@@ -13,7 +13,7 @@ clean :
 test: build test-unit
 
 test-unit:
-	cask ${EMACS} --batch -L . -L test -l frames-only-mode-test.el -l revertable-set-test.el -f ert-run-tests-batch
+	cask ${EMACS} --batch -L . -L test -l frames-only-mode-test.el -l revertable-set-test.el -f ert-run-tests-batch-and-exit
 
 test-load:
 	cask ${EMACS} -Q --chdir . --script "load-test/loading-test.el"
