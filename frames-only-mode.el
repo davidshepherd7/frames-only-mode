@@ -4,7 +4,7 @@
 
 ;; Author: David Shepherd <davidshepherd7@gmail.com>
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "26.3") (dash "2.13.0") (s "1.11.0"))
+;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: frames, windows
 ;; URL: https://github.com/davidshepherd7/frames-only-mode
 
@@ -12,9 +12,6 @@
 ;;; Commentary:
 
 ;;; Code:
-
-(require 'dash)
-(require 's)
 
 
 
@@ -132,11 +129,11 @@ we even set variables that are not currently bound, but we unbind
 them again on revert."
   ;; Transform to list of (var value initial-value) and call helper function. I
   ;; wish we had a back-portable thread-last macro...
-  (let ((var-val-initials (-map (lambda (s) (append s
-                                               (list (when (boundp (car s))
-                                                       (symbol-value (car s)))
-                                                     (boundp (car s)))))
-                                var-vals)))
+  (let ((var-val-initials (seq-map (lambda (s) (append s
+                                                  (list (when (boundp (car s))
+                                                          (symbol-value (car s)))
+                                                        (boundp (car s)))))
+                                   var-vals)))
     (frames-only-mode--revertable-set-helper var-val-initials)))
 
 (defun frames-only-mode--revertable-set-helper (var-value-initials)
@@ -151,13 +148,13 @@ them again on revert."
                (makunbound (car s)))))))
 
     ;; Set each var
-    (-map (lambda (s) (set (car s) (cadr s))) var-value-initials)
+    (seq-map (lambda (s) (set (car s) (cadr s))) var-value-initials)
 
     ;; Return a function to revert the changes
     (lambda ()
       "Revert the variable values set by revertable-set"
       (when (not revert-done)
-        (-map revert-var-fn var-value-initials)
+        (seq-map revert-var-fn var-value-initials)
         (setq revert-done t)))))
 
 (defvar frames-only-mode--revert-fn #'ignore
@@ -187,11 +184,11 @@ This is useful for closing temporary windows created by some commands."
 
 
 (defun frames-only-should-kill-frame-for-buffer (b-name)
-  (--any?
-   (cond
-    ((stringp it) (equal b-name it))
-    ((and (consp it) (eq (car it) 'regexp)) (s-matches-p (cdr it) b-name))
-    (t nil))
+  (seq-some
+   (lambda (it) (cond
+            ((stringp it) (equal b-name it))
+            ((and (consp it) (eq (car it) 'regexp)) (string-match-p (cdr it) b-name))
+            (t nil)))
    frames-only-mode-kill-frame-when-buffer-killed-buffer-list))
 
 
